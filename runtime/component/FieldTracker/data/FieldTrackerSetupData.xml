@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This software is in the public domain under CC0 1.0 Universal plus a Grant of Patent License. To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty. You should have received a copy of the CC0 Public Domain Dedication along with this software (see the LICENSE.md file). If not, see <http://creativecommons.org/publicdomain/zero/1.0/>. -->
+<entity-facade-xml type="seed">
+	<!-- Base Screen -->
+	<moqui.screen.SubscreensItem screenLocation="component://webroot/screen/webroot/apps.xml" subscreenName="ft" subscreenLocation="component://FieldTracker/screen/FieldTracker.xml" menuTitle="Field Tracker" menuIndex="8" menuInclude="Y" />
+
+	<!-- <moqui.security.ArtifactGroupMember artifactGroupId="FieldTrackerAdmin" artifactName="" nameIsPattern="N" artifactTypeEnumId="AT_SERVICE" inheritAuthz="Y"/> -->
+
+	<!-- authz/permission for FIELD_TRACKER_ADMIN users -->
+	<!-- An artifact group for field tracker -->
+	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER" description="HiveMind Admin (via root screen)" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER" artifactName="component://FieldTracker/screen/FieldTracker.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" />
+	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADMIN_HMAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_FULL_ADMIN" userGroupId="ADMIN" artifactGroupId="FIELD_TRACKER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+
+<!-- 	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Admin Screens" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_ADMIN" artifactName="component://FieldTracker/screen/Admin/Admin.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" />
+	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER_ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+
+	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Manager Screens" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_MANAGER" artifactName="component://FieldTracker/screen/Manager/Manager.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Managers" />
+	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_MANAGER" artifactGroupId="FIELD_TRACKER_MANAGER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+
+	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User Screens" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTrackerUser.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_USER" description="Field Tracker User" />
+	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_USER_FTAD" userGroupId="FIELD_TRACKER_USER" artifactGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+ -->
+	<moqui.basic.Enumeration description="Field Tracker Roles" enumId="RgpFieldTracker" enumTypeId="RoleGroup" />
+	<mantle.party.RoleType description="HR Executive" roleTypeId="HumanResourcesExecutive" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="HumanResourcesExecutive" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="HumanResourcesManager" />
+	<mantle.party.RoleType description="Field Executive On Premise" roleTypeId="FieldExecutiveOnPremise" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOnPremise" />
+	<mantle.party.RoleType description="Field Executive Off Premise" roleTypeId="FieldExecutiveOffPremise" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOffPremise" />
+	<mantle.party.RoleType description="Sales Executive" roleTypeId="SalesExecutive" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SalesExecutive" />
+	<mantle.party.RoleType description="Asst Sales Manager" roleTypeId="AsstSalesManager" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="AsstSalesManager" />
+	<mantle.party.RoleType description="Senior Sales Manager" roleTypeId="SeniorSalesManager" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SeniorSalesManager" />
+
+</entity-facade-xml>

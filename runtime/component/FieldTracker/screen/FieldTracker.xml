@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd">
+	<always-actions>
+		<set field="appRoot" value="ft" />
+		<set field="searchIndexName" value="fieldTracker" />
+		<set field="searchTaskDocType" value="FTTask" />
+	</always-actions>
+	<subscreens default-item="User" always-use-full-path="true"/>
+	<widgets>
+		<subscreens-panel id="FTHomePanel" type="tab" title="Field Tracker" />
+	</widgets>
+</screen>
