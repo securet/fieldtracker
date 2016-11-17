@@ -1,10 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-2.0.xsd">
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-2.0.xsd">
 	<extend-entity entity-name="ProductStore" package="mantle.product.store">
-		<field name="address" type="text-medium" enable-audit-log="true"/>
-		<field name="latitude" type="number-decimal" enable-audit-log="true"/>
-		<field name="longitude" type="number-decimal" enable-audit-log="true"/>
-		<field name="proximityRadius" type="number-decimal" enable-audit-log="true"/>
-	</extend-entity>          
+		<field name="address" type="text-medium" enable-audit-log="true" />
+		<field name="latitude" type="number-decimal" enable-audit-log="true" />
+		<field name="longitude" type="number-decimal" enable-audit-log="true" />
+		<field name="proximityRadius" type="number-decimal" enable-audit-log="true" />
+	</extend-entity>
+	<entity entity-name="ProductStoreRole" package="mantle.product.store">
+		<description>Will have all store roles</description>
+		<field name="productStoreId" type="id" is-pk="true"></field>
+		<field name="partyId" type="id" is-pk="true"></field>
+		<field name="roleTypeId" type="id" is-pk="true"></field>
+		<relationship type="one" related="mantle.product.store.ProductStore"></relationship>
+		<relationship type="one" related="mantle.party.Party"></relationship>
+		<relationship type="one" related="mantle.party.PartyRole">
+			<key-map field-name="partyId" />
+			<key-map field-name="roleTypeId" />
+		</relationship>
+	</entity>
+	<entity entity-name="RequestHistory" package="mantle.request" cache="never">
+		<description>Request History</description>
+		<field name="requestHistoryId" type="id"></field>
+		<field name="requestId" type="id"></field>
+		<field name="statusId" type="id" />
+		<field name="requestName" type="text-medium" />
+		<field name="description" type="text-long" />
+		<field name="productStoreId" type="id" />
+		<field name="username" type="id" />
+		<field name="requestJson" type="text-long"></field>
+		<relationship type="one" title="Request" related="moqui.basic.StatusItem" short-alias="status" />
+		<relationship type="one" related="mantle.product.store.ProductStore" short-alias="store" />
+		<relationship type="one" title="UserAccount" related="moqui.security.UserAccount" short-alias="requestHistory">
+			<key-map field-name="username" />
+		</relationship>
+		<relationship type="one" related="mantle.request.Request" short-alias="requests">
+			<key-map field-name="requestId" />
+		</relationship>
+	</entity>
+	<extend-entity entity-name="Request" package="mantle.request">
+		<field name="requestJson" type="text-long"></field>
+	</extend-entity>	
+	
+
+	<view-entity package="mantle.product.store" entity-name="ProductStoreRoleWithUser">
+		<description>Product Store Role and user</description>
+		<member-entity entity-alias="PSR" entity-name="ProductStoreRole"></member-entity>
+		<member-entity entity-alias="UA" entity-name="UserAccount" join-from-alias="PSR">
+			<key-map field-name="partyId" />
+		</member-entity>
+		<member-entity entity-alias="PS" entity-name="ProductStore" join-from-alias="PSR">
+			<key-map field-name="productStoreId" />
+		</member-entity>
+		<member-entity entity-alias="RT" entity-name="RoleType" join-from-alias="PSR">
+			<key-map field-name="roleTypeId" />
+		</member-entity>
+		<alias-all entity-alias="PSR"></alias-all>
+		<alias entity-alias="UA" name="username"></alias>
+		<alias entity-alias="UA" name="disabled"></alias>
+		<alias entity-alias="PS" name="storeName"></alias>
+		<alias entity-alias="PS" name="address"></alias>
+		<alias entity-alias="PS" name="latitude"></alias>
+		<alias entity-alias="PS" name="longitude"></alias>
+		<alias entity-alias="PS" name="proximityRadius"></alias>
+		<alias entity-alias="RT" name="roleDescription" field="description"></alias>
+	</view-entity>
 </entities>

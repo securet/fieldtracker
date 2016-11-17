@@ -12,22 +12,8 @@
 		<default-response url="." />
 	</transition>
 	<transition-include name="getGeoCountryStates" location="component://SimpleScreens/template/party/PartyForms.xml" />
-	<transition name="addAdmin">
-		<actions>
-			<entity-find-one entity-name="PersonAndUserAccount" value-field="personAndUserAccount" />
-			<service-call name="create#moqui.security.UserGroupMember" in-map="[userGroupId:'HIVE_MIND_ADMIN',
-                    userId:personAndUserAccount.userId, fromDate:ec.user.nowTimestamp]" />
-		</actions>
-		<default-response url="." />
-	</transition>
-	<transition name="removeAdmin">
-		<actions>
-			<entity-find-one entity-name="PersonAndUserAccount" value-field="personAndUserAccount" />
-			<entity-delete-by-condition entity-name="moqui.security.UserGroupMember">
-				<econdition field-name="userGroupId" value="HIVE_MIND_ADMIN" />
-				<econdition field-name="userId" from="personAndUserAccount.userId" />
-			</entity-delete-by-condition>
-		</actions>
+	<transition name="updatePassword">
+		<service-call name="org.moqui.impl.UserServices.update#Password" />
 		<default-response url="." />
 	</transition>
 	<transition name="addUser">
@@ -66,16 +52,30 @@
 			<order-by field-name="name" />
 		</order-map-list>
 		<entity-find entity-name="mantle.party.PartyRole" limit="1" list="partyRoles">
-			<econdition field-name="partyId"/>
+			<econdition field-name="partyId" />
 		</entity-find>
 		<if condition="partyRoles">
-			<set field="roleTypeId" from="partyRoles[0].roleTypeId"/>
+			<set field="roleTypeId" from="partyRoles[0].roleTypeId" />
 		</if>
 	</actions>
 	<widgets>
 		<container-panel id="UserInfoContainer" dynamic="true">
 			<!-- <panel-left size="300"> <label text="Payment Information" type="h2"/> <label text="Where payments are sent" type="p"/> <container-dialog id="PaymentInfoEdit" button-text="Edit Payment Info" width="800"> <form-single name="PaymentInfo" transition="storeContactInfo" map="paymentInfoFlat" extends="component://SimpleScreens/template/party/PartyForms.xml#ContactInfo"/> </container-dialog> <render-mode><text type="html" location="component://SimpleScreens/template/party/ContactInfo.html.gstring"/></render-mode> </panel-left> -->
 			<panel-center>
+                <container-dialog id="UpdatePassword" button-text="Change Password">
+                    <form-single name="UpdatePasswordForm" transition="updatePassword" map="personAndUserAccount">
+						<field name="partyId">
+							<default-field>
+								<hidden />
+							</default-field>
+						</field>
+                        <field name="userId"><default-field><hidden/></default-field></field>
+                        <field name="oldPassword"><default-field><hidden default-value="ignored"/></default-field></field>
+                        <field name="newPassword"><default-field><password size="20"/></default-field></field>
+                        <field name="newPasswordVerify"><default-field><password size="20"/></default-field></field>
+                        <field name="submitButton"><default-field title="Update"><submit/></default-field></field>
+                    </form-single>
+                </container-dialog>
 				<!-- <section name="UserAdminSection"><condition><expression>ec.user.isInGroup(personAndUserAccount?.userId, "HIVE_MIND_ADMIN", null, ec)</expression></condition> <widgets><link url="removeAdmin" text="Remove from Admin Group" link-type="hidden-form" parameter-map="[partyId:partyId]"/></widgets> <fail-widgets><link url="addAdmin" text="Add to Admin Group" link-type="hidden-form" parameter-map="[partyId:partyId]"/></fail-widgets> </section> <section name="UserUseSection"><condition><expression>ec.user.isInGroup(personAndUserAccount?.userId, "HIVE_MIND_USERS", null, ec)</expression></condition> <widgets><link url="removeUser" text="Remove from User Group" link-type="hidden-form" parameter-map="[partyId:partyId]"/></widgets> 
 					<fail-widgets><link url="addUser" text="Add to User Group" link-type="hidden-form" parameter-map="[partyId:partyId]"/></fail-widgets> </section> -->
 				<form-single name="EditUser" transition="updateUser" map="personAndUserAccount">
@@ -99,11 +99,7 @@
 							<text-line size="15" />
 						</default-field>
 					</field>
-					<!-- <field name="middleName">
-						<default-field>
-							<text-line size="15" />
-						</default-field>
-					</field> -->
+					<!-- <field name="middleName"> <default-field> <text-line size="15" /> </default-field> </field> -->
 					<field name="lastName">
 						<default-field>
 							<text-line size="15" />
@@ -116,11 +112,14 @@
 					</field>
 					<field name="roleTypeId">
 						<default-field>
-							<drop-down><entity-options key="${roleTypeId}" text="${description}">
-							    <entity-find entity-name="mantle.party.RoleGroupMemberAndType" cache="true">
-							        <econdition field-name="roleGroupEnumId" value="RgpFieldTracker"/>
-							        <order-by field-name="description"/></entity-find>
-							</entity-options></drop-down>
+							<drop-down>
+								<entity-options key="${roleTypeId}" text="${description}">
+									<entity-find entity-name="mantle.party.RoleGroupMemberAndType" cache="true">
+										<econdition field-name="roleGroupEnumId" value="RgpFieldTracker" />
+										<order-by field-name="description" />
+									</entity-find>
+								</entity-options>
+							</drop-down>
 						</default-field>
 					</field>
 					<field name="locale">

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This software is in the public domain under CC0 1.0 Universal plus a Grant of Patent License. To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty. You should have received a copy of the CC0 Public Domain Dedication along with this software (see the LICENSE.md file). If not, see <http://creativecommons.org/publicdomain/zero/1.0/>. -->
-<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-include="false">
-	<!-- set userGroupId so that when an Account is created it will be added to that group -->
-	<always-actions>
-		<set field="userGroupId" from="HIVE_MIND_USERS" />
-	</always-actions>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd"  default-menu-title="Manage Stores" default-menu-include="false">
 
 	<transition name="findStore">
 		<default-response url="." />
@@ -18,6 +13,13 @@
 	</transition>
 	<transition name="editStore">
 		<default-response url="../EditStore" />
+	</transition>
+	<transition name="updateStore">
+		<actions>
+			<service-call name="create#mantle.product.store.ProductStore" in-map="true" />
+		</actions>
+		<default-response url="../FindStore" />
+		<error-response url="." />
 	</transition>
 
 	<pre-actions>
@@ -51,7 +53,7 @@
 				</form-single>
 			</container-dialog>
 			<container-dialog id="AddStoreDialog" button-text="Add Store">
-				<form-single name="CreateUser" transition="createStore">
+				<form-single name="CreateStore" transition="createStore">
 					<field name="storeName">
 						<default-field>
 							<text-line size="15" />
@@ -73,7 +75,7 @@
 						</default-field>
 					</field>
 					<field name="proximityRadius">
-						<default-field>
+						<default-field title="Radius in Mts ">
 							<text-line size="16" format="#0.00" />
 						</default-field>
 					</field>
@@ -113,7 +115,7 @@
 			</field>
 			<field name="proximityRadius">
 				<header-field show-order-by="case-insensitive" />
-				<default-field>
+				<default-field title="Radius in Mts ">
 					<display />
 				</default-field>
 			</field>

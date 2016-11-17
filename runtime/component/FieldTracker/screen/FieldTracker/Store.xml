@@ -1,29 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-This software is in the public domain under CC0 1.0 Universal plus a 
-Grant of Patent License.
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Stores" default-menu-index="2">
 
-To the extent possible under law, the author(s) have dedicated all
-copyright and related and neighboring rights to this software to the
-public domain worldwide. This software is distributed without any
-warranty.
+	<!-- Restfull implementations -->
+	<transition name="create" method="post">
+		<service-call name="create#mantle.product.store.ProductStore" in-map="ec.web.parameters" web-send-json-response="true" />
+		<default-response type="none" />
+	</transition>
 
-You should have received a copy of the CC0 Public Domain Dedication
-along with this software (see the LICENSE.md file). If not, see
-<http://creativecommons.org/publicdomain/zero/1.0/>.
--->
-<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd"
-        default-menu-title="Stores" default-menu-index="2" menu-image="/hmstatic/images/user-man27.png">
+	<transition name="update" method="post">
+		<service-call name="update#mantle.product.store.ProductStore" in-map="ec.web.parameters" web-send-json-response="true" />
+		<default-response type="none" />
+	</transition>
+
+	<transition name="userStores" method="get">
+		<actions>
+			<log level="info" message="Found user login as ${ec.getUser().getUserAccount().username}" />
+			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores">
+				<econdition value="${ec.getUser().getUserAccount().username}" field-name="username" />
+			</entity-find>
+			<log level="info" message="userStores: ${userStores}"/>
+			<script>
+				ec.web.sendJsonResponse(userStores)
+			</script>
+		</actions>
+		<default-response type="none" />
+	</transition>
+
 
 	<subscreens default-item="FindStore" always-use-full-path="true">
-        <subscreens-item name="FindStore" location="component://FieldTracker/screen/FieldTracker/Store/FindStore.xml"
-                menu-include="true"/>
-        <subscreens-item name="EditStore" location="component://FieldTracker/screen/FieldTracker/User/EditUser.xml"
-                menu-index="1" menu-title="User"/>
+		<subscreens-item name="FindStore" location="component://FieldTracker/screen/FieldTracker/Store/FindStore.xml" menu-include="true" />
+		<subscreens-item name="EditStore" location="component://FieldTracker/screen/FieldTracker/Store/EditStore.xml" menu-index="1" menu-title="Edit Store" menu-include="false" />
 	</subscreens>
 
-    <widgets>
-        <subscreens-panel id="stores-panel" type="tab"/>
-    </widgets>
+	<widgets>
+		<subscreens-panel id="stores-panel" type="tab" />
+	</widgets>
 </screen>

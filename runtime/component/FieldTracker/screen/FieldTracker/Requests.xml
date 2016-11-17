@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Requests" default-menu-index="3">
+
+	<!-- Rest full implementations -->
+	<transition name="createPromoterRequest" method="post">
+		<actions>
+			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
+			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
+			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" web-send-json-response="true">
+				<field-map field-name="statusId" value="ReqSubmitted"/>
+				<field-map field-name="requestTypeEnumId" value="RqtAddPromoter"/>
+				<field-map field-name="description" value="${description}"/>
+				<field-map field-name="requestName" value="Request to approve the promoter for the store ${productStore.storeName}"/>
+				<field-map field-name="requestJson" value="${requestJsonStr}"/>
+			</service-call>
+		</actions>
+		<default-response type="none" />
+	</transition>
+	<transition name="uploadImage" begin-transaction="false" method="post">
+		<actions>
+			<log level="info" message="found context as ${context.snapshotFile}" />
+			<script><![CDATA[
+	            String filename = snapshotFile.getName();
+	            String fileExt = org.apache.commons.io.FilenameUtils.getExtension(filename);
+	            String savedFilename = context.purpose + "_" + StupidUtilities.getRandomString(6) + "_" + System.currentTimeMillis() + "." + fileExt;
+	            if (!(filename.endsWith(".jpg") || filename.endsWith(".png"))) { 
+		            ec.message.addError("File ${filename} is not a jpg/png file, should be a zip containing one or more xml data files"); 
+					ec.web.sendJsonResponse(ec.message)
+		            return;
+				}
+	            File targetFile = new File((String) ec.factory.getRuntimePath() + '/db/snapshot/' + savedFilename)
+	            println(targetFile.getName())
+	            if (targetFile.exists()) {
+					ec.message.addError("File ${filename} already exists"); 
+					return; 
+				}
+	            InputStream fileStream = snapshotFile.getInputStream()
+	            try {
+					targetFile.append(fileStream)
+				} finally {
+					fileStream.close()
+				}
+				result = [:];
+				result.savedFilename=savedFilename;
+				ec.web.sendJsonResponse(result)
+        ]]></script>
+		</actions>
+		<default-response type="none" />
+	</transition>
+
+	<subscreens default-item="FindRequests" always-use-full-path="true">
+		<subscreens-item name="FindRequests" location="component://FieldTracker/screen/FieldTracker/Requests/FindRequests.xml" menu-include="true" />
+	</subscreens>
+	<widgets>
+		<subscreens-panel id="requests-panel" type="tab" />
+	</widgets>
+</screen>

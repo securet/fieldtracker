@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Store" default-menu-index="1" default-menu-include="false">
+
+
+	<parameter name="productStoreId" required="true" />
+
+	<transition name="updateStore">
+		<actions>
+			<service-call name="update#mantle.product.store.ProductStore" in-map="context" />
+			<message>Added Store with Id : ${productStoreId}</message>
+		</actions>
+		<default-response url="." />
+	</transition>
+	<transition name="createProductStoreRole">
+		<actions>
+			<service-call name="create#mantle.product.store.ProductStoreRole" in-map="context" />
+			<entity-find-one value-field="person" entity-name="Person"></entity-find-one>
+			<message>Added Role ${roleTypeId} for user ${person.firstName} ${person.lastName}</message>
+		</actions>
+		<default-response url="." />
+	</transition>
+	<transition name="listProductStoreRoleSubmit">
+		<actions>
+			<if condition="delete">
+				<service-call name="delete#mantle.product.store.ProductStoreRole" in-map="context" />
+				<message>Deleted Role ${roleTypeId} for user ${name}</message>
+			</if>
+		</actions>
+		<default-response url="." />
+	</transition>
+	<transition name="getPartiesByRole">
+		<actions>
+			<entity-find entity-name="mantle.party.PartyDetailAndRole" cache="true" list="usersFromRole">
+				<econdition field-name="roleTypeId" />
+				<select-field field-name="partyId" />
+				<select-field field-name="firstName" />
+				<select-field field-name="lastName" />
+				<order-by field-name="firstName" />
+			</entity-find>
+			<script>
+				ec.web.sendJsonResponse(usersFromRole)
+			</script>
+		</actions>
+		<default-response type="none" />
+	</transition>
+
+	<actions>
+		<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
+		<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+			<econdition field-name="productStoreId" />
+		</entity-find>
+	</actions>
+
+	<widgets>
+		<container>
+			<form-single name="EditStore" transition="updateStore" map="productStore">
+				<field name="productStoreId">
+					<default-field>
+						<hidden />
+					</default-field>
+				</field>
+				<field name="storeName">
+					<default-field>
+						<text-line size="15" />
+					</default-field>
+				</field>
+				<field name="address">
+					<default-field>
+						<text-area cols="60" />
+					</default-field>
+				</field>
+				<field name="latitude">
+					<default-field>
+						<text-line size="16" format="#0.00" />
+					</default-field>
+				</field>
+				<field name="longitude">
+					<default-field>
+						<text-line size="16" format="#0.00" />
+					</default-field>
+				</field>
+				<field name="proximityRadius">
+					<default-field title="Radius in Mts ">
+						<text-line size="16" format="#0.00" />
+					</default-field>
+				</field>
+				<field name="submitButton">
+					<default-field title="Update">
+						<submit />
+					</default-field>
+				</field>
+			</form-single>
+			<container-dialog button-text="Add Store Role" id="AddStoreRole">
+				<form-single name="AddProductStoreRole" transition="createProductStoreRole" dynamic="true">
+					<field name="roleTypeId">
+						<default-field>
+							<drop-down search="true">
+								<entity-options key="${roleTypeId}" text="${description}">
+									<entity-find entity-name="mantle.party.RoleGroupMemberAndType" cache="true">
+										<econditions combine="and">
+											<econdition field-name="roleGroupEnumId" value="RgpFieldTracker" />
+											<econdition field-name="roleTypeId" operator="not-like" value="HumanResources%" />
+										</econditions>
+										<order-by field-name="description" />
+									</entity-find>
+								</entity-options>
+							</drop-down>
+						</default-field>
+					</field>
+					<field name="partyId">
+						<default-field>
+							<drop-down search="true">
+								<dynamic-options transition="getPartiesByRole" label-field="firstName&quot;] +' ' + value[&quot;lastName" value-field="partyId">
+									<depends-on field="roleTypeId" />
+								</dynamic-options>
+							</drop-down>
+						</default-field>
+					</field>
+					<field name="productStoreId">
+						<default-field>
+							<hidden />
+						</default-field>
+					</field>
+					<field name="submit">
+						<default-field>
+							<submit text="Create"></submit>
+						</default-field>
+					</field>
+				</form-single>
+			</container-dialog>
+			<container-box>
+				<box-header>
+					<label text="Store Roles" />
+				</box-header>
+				<box-body>
+					<form-list name="ProductStoreRoles" list="productStoreRoles" list-entry="productStoreRole" transition="listProductStoreRoleSubmit" multi="false" dynamic="true">
+						<row-actions>
+							<!-- <entity-find-related-one relationship-name="ProductStore" to-value-field="productStore" value-field="productStoreRole"/> <entity-find-related-one relationship-name="Party" to-value-field="party" value-field="productStoreRole"/> <entity-find-one entity-name="RoleType" value-field="roleType"> <field-map field-name="roleTypeId" from="productStoreRole.roleTypeId"/> </entity-find-one> -->
+							<entity-find-one value-field="person" entity-name="Person"></entity-find-one>
+						</row-actions>
+						<field name="productStoreId">
+							<default-field title="Product Store">
+								<display-entity entity-name="ProductStore" text="${storeName}" />
+							</default-field>
+						</field>
+						<field name="partyId">
+							<default-field title="Name">
+								<display text-map="person" text="${firstName} ${lastName}" />
+							</default-field>
+						</field>
+						<field name="name">
+							<default-field title="Name">
+								<hidden default-value="${person.firstName} ${person.lastName}"/>
+							</default-field>
+						</field>
+						<field name="roleTypeId">
+							<default-field title="Role Type">
+								<display-entity entity-name="RoleType" text="${description}" />
+							</default-field>
+						</field>
+						<field name="delete">
+							<default-field title="Product Store">
+								<submit confirmation="Are you sure you want to delete this role?" text="Delete"></submit>
+							</default-field>
+						</field>
+					</form-list>
+				</box-body>
+			</container-box>
+		</container>
+	</widgets>
+</screen>

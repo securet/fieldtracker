@@ -8,11 +8,15 @@
 
 	<!-- authz/permission for FIELD_TRACKER_ADMIN users -->
 	<!-- An artifact group for field tracker -->
-	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER" description="HiveMind Admin (via root screen)" />
+	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER" description="Field Tracker" />
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER" artifactName="component://FieldTracker/screen/FieldTracker.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" />
 	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADMIN_HMAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
 	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_FULL_ADMIN" userGroupId="ADMIN" artifactGroupId="FIELD_TRACKER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+
+	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Store.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Requests.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 
 <!-- 	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Admin Screens" />
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_ADMIN" artifactName="component://FieldTracker/screen/Admin/Admin.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
@@ -43,5 +47,13 @@
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="AsstSalesManager" />
 	<mantle.party.RoleType description="Senior Sales Manager" roleTypeId="SeniorSalesManager" />
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SeniorSalesManager" />
+
+	<moqui.basic.Enumeration enumId="RqtAddPromoter" description="Add Promoter" enumTypeId="RequestType" />
+	<moqui.basic.Enumeration enumId="RqtLeave" description="Leave" enumTypeId="RequestType" />
+
+	<!-- Request Status -->
+	<moqui.basic.StatusItem description="Rejected" sequenceNum="99" statusId="ReqRejected" statusTypeId="Request" />
+	<moqui.basic.StatusFlowTransition statusFlowId="Default" statusId="ReqSubmitted" toStatusId="ReqRejected" transitionName="Rejected" />
+	<moqui.basic.StatusFlowTransition statusFlowId="Default" statusId="ReqRejected" toStatusId="ReqSubmitted" transitionName="Re-Submitted" />
 
 </entity-facade-xml>

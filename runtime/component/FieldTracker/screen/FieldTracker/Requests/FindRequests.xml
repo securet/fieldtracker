@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" require-authentication="false" include-child-content="true">
+	<widgets>
+		<container-dialog id="UploadDialog" button-text="Upload Image">
+			<form-single name="UploadImage" transition="uploadImage">
+				<field name="purpose">
+					<default-field><text-line></text-line></default-field>
+				</field>
+				<field name="snapshotFile">
+					<default-field>
+						<file size="50" />
+					</default-field>
+				</field>
+				<field name="submitButton">
+					<default-field title="Upload Snapshot">
+						<submit />
+					</default-field>
+				</field>
+			</form-single>
+		</container-dialog>
+	</widgets>
+</screen>
