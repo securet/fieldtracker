@@ -57,6 +57,25 @@
 		<if condition="partyRoles">
 			<set field="roleTypeId" from="partyRoles[0].roleTypeId" />
 		</if>
+		<entity-find entity-name="mantle.party.PartyDocument" list="partyDocuments" >
+			<econdition field-name="partyId" />
+		</entity-find>
+		<iterate entry="partyDocument" list="partyDocuments">
+			<if condition="partyDocument.docType == 'userPhotoPath'">
+				<then>
+					<set field="userPhotoPath" from="partyDocument.docPath"/>
+				</then>
+				<else-if condition="partyDocument.docType == 'aadharIdPath'">
+					<set field="aadharIdPath" from="partyDocument.docPath"/>
+				</else-if>
+				<else-if condition="partyDocument.docType == 'addressIdPath'">
+					<set field="addressIdPath" from="partyDocument.docPath"/>
+				</else-if>
+			</if>
+		</iterate>
+		<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+			<econdition field-name="partyId" />
+		</entity-find>
 	</actions>
 	<widgets>
 		<container-panel id="UserInfoContainer" dynamic="true">
@@ -105,6 +124,13 @@
 							<text-line size="15" />
 						</default-field>
 					</field>
+					<field name="userPhoto">
+						<default-field>
+							<link link-type="anchor" url="/uploads/uid/${userPhotoPath}" url-type="plain" target-window="_blank">
+								<image url-type="plain" width="150px" url="/uploads/uid/${userPhotoPath}"></image>
+							</link>
+						</default-field>
+					</field>
 					<field name="emailAddress" from="primaryEmail.emailAddress">
 						<default-field>
 							<text-line />
@@ -144,7 +170,20 @@
 							</drop-down>
 						</default-field>
 					</field>
-
+					<field name="aadharIdPath">
+						<default-field>
+							<link link-type="anchor" url="/uploads/uid/${aadharIdPath}" url-type="plain" target-window="_blank">
+								<image url-type="plain" width="150px" url="/uploads/uid/${aadharIdPath}"></image>
+							</link>
+						</default-field>
+					</field>
+					<field name="addressIdPath">
+						<default-field>
+							<link link-type="anchor" url="/uploads/uid/${addressIdPath}" url-type="plain" target-window="_blank">
+								<image url-type="plain" width="150px" url="/uploads/uid/${addressIdPath}"></image>
+							</link>
+						</default-field>
+					</field>
 					<field name="submitButton">
 						<default-field title="Update">
 							<submit />
@@ -153,5 +192,6 @@
 				</form-single>
 			</panel-center>
 		</container-panel>
+		<include-screen location="component://FieldTracker/screen/FieldTracker/Store/ProductStoreRoles.xml"/>
 	</widgets>
 </screen>

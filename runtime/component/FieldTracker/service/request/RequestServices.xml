@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
+
+	<service verb="convertPromoterApprovalRequest" noun="Request">
+		<in-parameters>
+			<auto-parameters include="all"></auto-parameters>
+			<parameter name="requestId" required="true" />
+		</in-parameters>
+		<out-parameters>
+			<auto-parameters include="all"></auto-parameters>
+		</out-parameters>
+		<actions>
+			<entity-find-one entity-name="Request" value-field="promoterAppRequest"></entity-find-one>
+			<script>
+				import groovy.json.JsonSlurper;
+				JsonSlurper jsonSlurper = new JsonSlurper();
+				requestJsonParsed = jsonSlurper.parseText(promoterAppRequest.requestJson);
+				createUserInput = [:]
+			</script>
+			<set field="createUserInput.firstName" from="requestJsonParsed.requestInfo.firstName" />
+			<set field="createUserInput.lastName" from="requestJsonParsed.requestInfo.lastName" />
+			<set field="createUserInput.emailAddress" from="requestJsonParsed.requestInfo.emailId" />
+			<set field="createUserInput.roleTypeId" value="FieldExecutiveOnPremise" />
+			<set field="createUserInput.username" from="requestJsonParsed.requestInfo.emailId" />
+			<set field="genPassword" from="StupidUtilities.getRandomString(3) + 'a1!'" />
+			<set field="createUserInput.newPassword" from="genPassword" />
+			<set field="createUserInput.newPasswordVerify" from="genPassword" />
+			<service-call name="mantle.party.PartyServices.create#Account" in-map="createUserInput + [loginAfterCreate:'false']" out-map="context" />
+			<service-call name="create#moqui.security.UserGroupMember" in-map="[userGroupId:'FIELD_TRACKER_USER', userId:context.userId, fromDate:ec.user.nowTimestamp]" />
+			<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'aadharIdPath', docPath:requestJsonParsed.requestInfo.aadharIdPath]" />
+			<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'userPhotoPath', docPath:requestJsonParsed.requestInfo.userPhoto]" />
+			<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'addressIdPath', docPath:requestJsonParsed.requestInfo.addressIdPath]" />
+			<set field="createUserInput.partyId" from="context.partyId" />
+			<set field="createUserInput.productStoreId" from="requestJsonParsed.requestInfo.productStoreId" />
+			<log level="info" message="createUserInput : ${createUserInput}" />
+			<service-call name="create#mantle.product.store.ProductStoreRole" in-map="createUserInput" />
+			<set field="promoterAppRequest.statusId" value="ReqCompleted" />
+			<service-call name="request.RequestServices.updateRequest#Request" in-map="promoterAppRequest" />
+		</actions>
+	</service>
+
+	<service verb="updateRequest" noun="Request">
+		<in-parameters>
+			<auto-parameters include="nonpk" />
+			<parameter name="requestId" required="true" />
+			<parameter name="clientPartyId" />
+		</in-parameters>
+		<out-parameters>
+			<auto-parameters include="all"></auto-parameters>
+		</out-parameters>
+		<actions>
+			<entity-find-one value-field="request" entity-name="Request" cache="false"></entity-find-one>
+			<service-call name="create#mantle.request.RequestHistory" in-map="request"></service-call>
+			<service-call name="update#mantle.request.Request" out-map="context" in-map="context" />
+			<if condition="clientPartyId">
+				<service-call name="mantle.request.RequestServices.replace#RequestParty" in-map="[requestId:requestId, roleTypeId:'CustomerBillTo', newPartyId:clientPartyId]" />
+			</if>
+		</actions>
+	</service>
+
+</services>

@@ -18,21 +18,9 @@
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Store.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Requests.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 
-<!-- 	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Admin Screens" />
-	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_ADMIN" artifactName="component://FieldTracker/screen/Admin/Admin.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
-	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" />
-	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER_ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
-
-	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Manager Screens" />
-	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_MANAGER" artifactName="component://FieldTracker/screen/Manager/Manager.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
-	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Managers" />
-	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_MANAGER" artifactGroupId="FIELD_TRACKER_MANAGER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
-
-	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User Screens" />
-	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTrackerUser.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
-	<moqui.security.UserGroup userGroupId="FIELD_TRACKER_USER" description="Field Tracker User" />
-	<moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_USER_FTAD" userGroupId="FIELD_TRACKER_USER" artifactGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
- -->
+	<!-- <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Admin Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_ADMIN" artifactName="component://FieldTracker/screen/Admin/Admin.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" /> <moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" /> <moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER_ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" /> <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker 
+		Manager Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_MANAGER" artifactName="component://FieldTracker/screen/Manager/Manager.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" /> <moqui.security.UserGroup userGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Managers" /> <moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_MANAGER" artifactGroupId="FIELD_TRACKER_MANAGER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" /> <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTrackerUser.xml" 
+		artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" /> <moqui.security.UserGroup userGroupId="FIELD_TRACKER_USER" description="Field Tracker User" /> <moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_USER_FTAD" userGroupId="FIELD_TRACKER_USER" artifactGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" /> -->
 	<moqui.basic.Enumeration description="Field Tracker Roles" enumId="RgpFieldTracker" enumTypeId="RoleGroup" />
 	<mantle.party.RoleType description="HR Executive" roleTypeId="HumanResourcesExecutive" />
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="HumanResourcesExecutive" />
@@ -55,5 +43,10 @@
 	<moqui.basic.StatusItem description="Rejected" sequenceNum="99" statusId="ReqRejected" statusTypeId="Request" />
 	<moqui.basic.StatusFlowTransition statusFlowId="Default" statusId="ReqSubmitted" toStatusId="ReqRejected" transitionName="Rejected" />
 	<moqui.basic.StatusFlowTransition statusFlowId="Default" statusId="ReqRejected" toStatusId="ReqSubmitted" transitionName="Re-Submitted" />
+
+	<moqui.basic.EnumerationType description="Party Identification Docs" enumTypeId="PartyIdentificationDocType" />
+	<moqui.basic.Enumeration description="Aadhar Id" enumId="aadharIdPath" enumTypeId="PartyIdentificationDocType" />
+	<moqui.basic.Enumeration description="User Photo" enumId="userPhotoPath" enumTypeId="PartyIdentificationDocType" />
+	<moqui.basic.Enumeration description="Address Id" enumId="addressIdPath" enumTypeId="PartyIdentificationDocType" />
 
 </entity-facade-xml>

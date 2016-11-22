@@ -20,25 +20,30 @@
 	</entity>
 	<entity entity-name="RequestHistory" package="mantle.request" cache="never">
 		<description>Request History</description>
-		<field name="requestHistoryId" type="id"></field>
+		<field name="requestHistoryId" type="id" is-pk="true"></field>
 		<field name="requestId" type="id"></field>
 		<field name="statusId" type="id" />
 		<field name="requestName" type="text-medium" />
 		<field name="description" type="text-long" />
 		<field name="productStoreId" type="id" />
-		<field name="username" type="id" />
+        <field name="username" type="text-medium"/>
 		<field name="requestJson" type="text-long"></field>
 		<relationship type="one" title="Request" related="moqui.basic.StatusItem" short-alias="status" />
 		<relationship type="one" related="mantle.product.store.ProductStore" short-alias="store" />
-		<relationship type="one" title="UserAccount" related="moqui.security.UserAccount" short-alias="requestHistory">
-			<key-map field-name="username" />
+		<relationship type="one" title="UserAccount" related="moqui.security.UserAccount" short-alias="user">
+			<key-map field-name="username" related="username"/>
 		</relationship>
 		<relationship type="one" related="mantle.request.Request" short-alias="requests">
 			<key-map field-name="requestId" />
 		</relationship>
 	</entity>
+	
 	<extend-entity entity-name="Request" package="mantle.request">
+        <field name="username" type="text-medium"/>
 		<field name="requestJson" type="text-long"></field>
+		<relationship type="one" title="UserAccount" related="moqui.security.UserAccount" short-alias="user">
+			<key-map field-name="username" related="username"/>
+		</relationship>
 	</extend-entity>	
 	
 
@@ -64,4 +69,16 @@
 		<alias entity-alias="PS" name="proximityRadius"></alias>
 		<alias entity-alias="RT" name="roleDescription" field="description"></alias>
 	</view-entity>
+	
+    <entity entity-name="PartyDocument" package="mantle.party">
+    	<field name="partyId" type="id" is-pk="true"></field>
+    	<field name="docType" type="id" is-pk="true"></field>
+    	<field name="docPath" type="text-long"></field>
+    	<relationship type="one" related="mantle.party.Party">
+    		<key-map field-name="partyId"/>
+    	</relationship>
+    	<relationship type="one" related="moqui.basic.Enumeration">
+    		<key-map field-name="docType" related="enumId"/>
+    	</relationship>
+    </entity>
 </entities>

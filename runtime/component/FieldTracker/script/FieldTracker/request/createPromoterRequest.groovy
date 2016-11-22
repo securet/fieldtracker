@@ -9,6 +9,12 @@ requiredFields.keySet().each {
 		ec.message.addError(requiredFields.get(it)+" cannot be empty");
 	}
 }
+if(emailId){
+	userIdExists = ec.entity.find("moqui.security.UserAccount").condition('username',emailId).count();
+	if(userIdExists>0){
+		ec.message.addError("User already exists with this email");
+	}
+}
 requestJson.requestInfo.firstName=firstName;
 requestJson.requestInfo.lastName=lastName;
 requestJson.requestInfo.productStoreId=productStoreId;
@@ -19,6 +25,7 @@ requestJson.requestInfo.weeklyOff=weeklyOff;
 requestJson.requestInfo.aadharIdPath=aadharIdPath;
 requestJson.requestInfo.userPhoto=userPhoto;
 requestJson.requestInfo.addressIdPath=addressIdPath;
+requestJson.requestInfo.roleTypeId=roleTypeId;
 JsonBuilder jb = new JsonBuilder();
 jb.call(requestJson);
 requestJsonStr = jb.toString();

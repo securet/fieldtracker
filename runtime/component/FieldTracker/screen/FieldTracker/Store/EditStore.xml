@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Store" default-menu-index="1" default-menu-include="false">
 
-
 	<parameter name="productStoreId" required="true" />
 
 	<transition name="updateStore">
@@ -128,44 +127,7 @@
 					</field>
 				</form-single>
 			</container-dialog>
-			<container-box>
-				<box-header>
-					<label text="Store Roles" />
-				</box-header>
-				<box-body>
-					<form-list name="ProductStoreRoles" list="productStoreRoles" list-entry="productStoreRole" transition="listProductStoreRoleSubmit" multi="false" dynamic="true">
-						<row-actions>
-							<!-- <entity-find-related-one relationship-name="ProductStore" to-value-field="productStore" value-field="productStoreRole"/> <entity-find-related-one relationship-name="Party" to-value-field="party" value-field="productStoreRole"/> <entity-find-one entity-name="RoleType" value-field="roleType"> <field-map field-name="roleTypeId" from="productStoreRole.roleTypeId"/> </entity-find-one> -->
-							<entity-find-one value-field="person" entity-name="Person"></entity-find-one>
-						</row-actions>
-						<field name="productStoreId">
-							<default-field title="Product Store">
-								<display-entity entity-name="ProductStore" text="${storeName}" />
-							</default-field>
-						</field>
-						<field name="partyId">
-							<default-field title="Name">
-								<display text-map="person" text="${firstName} ${lastName}" />
-							</default-field>
-						</field>
-						<field name="name">
-							<default-field title="Name">
-								<hidden default-value="${person.firstName} ${person.lastName}"/>
-							</default-field>
-						</field>
-						<field name="roleTypeId">
-							<default-field title="Role Type">
-								<display-entity entity-name="RoleType" text="${description}" />
-							</default-field>
-						</field>
-						<field name="delete">
-							<default-field title="Product Store">
-								<submit confirmation="Are you sure you want to delete this role?" text="Delete"></submit>
-							</default-field>
-						</field>
-					</form-list>
-				</box-body>
-			</container-box>
+			<include-screen location="component://FieldTracker/screen/FieldTracker/Store/ProductStoreRoles.xml"/>
 		</container>
 	</widgets>
 </screen>

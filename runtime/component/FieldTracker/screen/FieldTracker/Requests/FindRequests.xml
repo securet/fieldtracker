@@ -1,22 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" require-authentication="false" include-child-content="true">
+
+	<transition name="editPromoterDetails">
+		<default-response url="../ApproveRejectPromoter"></default-response>
+	</transition>
+
+	<actions>
+		<script>
+			if(!statusId){
+				context.statusId = ['ReqSubmitted'];
+			}else if(statusId=='all'){
+				context.statusId = null;
+			}
+		</script>
+		<log level="info" message="${statusId}"/>
+		<entity-find entity-name="Request" list="promoterApprovalRequests">
+			<search-form-inputs default-order-by="username,statusId,requestJson" />
+			<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
+			<econdition field-name="statusId" from="statusId" ignore-if-empty="true"/>
+			<order-by field-name="-lastUpdatedStamp" />
+		</entity-find>
+		<entity-find list="statusItem" entity-name="StatusItem">
+			<econdition field-name="statusId" />
+			<econdition field-name="statusTypeId" value="Request"/>
+		</entity-find>
+	</actions>
 	<widgets>
-		<container-dialog id="UploadDialog" button-text="Upload Image">
-			<form-single name="UploadImage" transition="uploadImage">
-				<field name="purpose">
-					<default-field><text-line></text-line></default-field>
-				</field>
-				<field name="snapshotFile">
+		<link url="." text="All Requests" link-type="auto">
+			<parameter name="statusId" value="all" />
+		</link>
+		<container-dialog button-text="Find Requests" id="FindRequests">
+			<form-single name="FindRequests" transition="findRequest">
+				<field name="username">
 					<default-field>
-						<file size="50" />
+						<text-find />
 					</default-field>
 				</field>
-				<field name="submitButton">
-					<default-field title="Upload Snapshot">
+				<field name="statusId">
+					<default-field>
+						<drop-down allow-multiple="true" >
+							<entity-options>
+								<entity-find entity-name="moqui.basic.StatusItem">
+									<econdition field-name="statusTypeId" value="Request" />
+								</entity-find>
+							</entity-options>
+						</drop-down>
+					</default-field>
+				</field>
+				<field name="requestJson">
+					<default-field title="First/LastName">
+						<text-find />
+					</default-field>
+				</field>
+				<field name="searchButton">
+					<default-field title="Find">
 						<submit />
 					</default-field>
 				</field>
 			</form-single>
 		</container-dialog>
+		<container>
+			<container-box>
+				<box-header>
+						<label text="Pending Promoter Approvals" type="h5" condition="statusId!=null &amp;&amp; statusId.size()==1 &amp;&amp; statusId[0]=='ReqSubmitted'"/>
+						<label text="All Requests" type="h5" condition="statusItem.size()==0"/>
+						<label text="Request with status ${statusItem?.description}" type="h5" condition="statusId!=null &amp;&amp; statusId.size()!=1"/>
+				</box-header>
+				<box-body>
+					<form-list name="PromoterApprovalRequests" list="promoterApprovalRequests" list-entry="promoterAppRequest" transition="updatePromoterApproval">
+						<row-actions>
+							<entity-find-one value-field="filedBy" entity-name="Person">
+								<field-map field-name="partyId" from="promoterAppRequest.filedByPartyId" />
+							</entity-find-one>
+							<script>
+								import groovy.json.JsonSlurper;
+								JsonSlurper jsonSlurper = new JsonSlurper();
+								requestJsonParsed = jsonSlurper.parseText(promoterAppRequest.requestJson);
+							</script>
+							<entity-find-one value-field="productStore" entity-name="ProductStore" cache="true">
+								<field-map field-name="productStoreId" from="requestJsonParsed.requestInfo.productStoreId" />
+							</entity-find-one>
+						</row-actions>
+						<field name="requestId">
+							<default-field>
+								<display also-hidden="true"></display>
+							</default-field>
+						</field>
+						<field name="requestDate">
+							<default-field>
+								<display also-hidden="false"></display>
+							</default-field>
+						</field>
+						<field name="statusId">
+							<default-field>
+								<display-entity entity-name="StatusItem" also-hidden="false"></display-entity>
+							</default-field>
+						</field>
+						<field name="requestName">
+							<default-field>
+								<display />
+							</default-field>
+						</field>
+						<field name="raisedBy">
+							<default-field>
+								<display text="${filedBy.firstName} ${filedBy.lastName}"></display>
+							</default-field>
+						</field>
+						<field name="promoterName">
+							<default-field>
+								<display text="${requestJsonParsed.requestInfo.firstName} ${requestJsonParsed.requestInfo.lastName} "></display>
+							</default-field>
+						</field>
+						<field name="storeName">
+							<default-field>
+								<display text="${productStore.storeName}"></display>
+							</default-field>
+						</field>
+						<field name="promoterEmailId">
+							<default-field>
+								<display text="${requestJsonParsed.requestInfo.emailId}"></display>
+							</default-field>
+						</field>
+						<field name="viewPromoterDetail">
+							<default-field title="">
+								<link url="editPromoterDetails" link-type="anchor" text="View Details">
+									<parameter name="requestId" />
+								</link>
+							</default-field>
+						</field>
+					</form-list>
+				</box-body>
+			</container-box>
+			<!-- <container-dialog id="UploadDialog" button-text="Upload Image"> <form-single name="UploadImage" transition="uploadImage"> <field name="purpose"> <default-field><text-line></text-line></default-field> </field> <field name="snapshotFile"> <default-field> <file size="50" /> </default-field> </field> <field name="submitButton"> <default-field title="Upload Snapshot"> <submit /> </default-field> </field> </form-single> </container-dialog> -->
+		</container>
 	</widgets>
 </screen>

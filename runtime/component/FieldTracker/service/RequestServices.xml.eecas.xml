@@ -1,0 +1,9 @@
+<secas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-eca-2.0.xsd">
+<!-- 	<seca service="mantle.request.RequestServices.update#Request" when="pre-service">
+		<actions>
+			<service-call name="create#mantle.request.RequestHistory" in-map="context + [statusId:'InvoiceInProcess']" />
+		</actions>
+	</seca>
+ --></secas>
+    
+    

@@ -77,15 +77,18 @@
 							<text-line />
 						</default-field>
 					</field>
-				<field name="roleTypeId">
-					<default-field>
-						<drop-down><entity-options key="${roleTypeId}" text="${description}">
-						    <entity-find entity-name="mantle.party.RoleGroupMemberAndType" cache="true">
-						        <econdition field-name="roleGroupEnumId" value="RgpFieldTracker"/>
-						        <order-by field-name="description"/></entity-find>
-						</entity-options></drop-down>
-					</default-field>
-				</field>
+					<field name="roleTypeId">
+						<default-field>
+							<drop-down>
+								<entity-options key="${roleTypeId}" text="${description}">
+									<entity-find entity-name="mantle.party.RoleGroupMemberAndType" cache="true">
+										<econdition field-name="roleGroupEnumId" value="RgpFieldTracker" />
+										<order-by field-name="description" />
+									</entity-find>
+								</entity-options>
+							</drop-down>
+						</default-field>
+					</field>
 					<field name="username">
 						<default-field tooltip="Leave blank to use Email Address">
 							<text-line size="20" />
@@ -114,14 +117,14 @@
 				</form-single>
 			</container-dialog>
 		</container>
-		
+
 		<form-list name="UserList" list="userList">
 			<row-actions>
 				<entity-find entity-name="mantle.party.PartyRole" limit="1" list="partyRoles">
-					<econdition field-name="partyId"/>
+					<econdition field-name="partyId" />
 				</entity-find>
 				<if condition="partyRoles">
-					<set field="roleTypeId" from="partyRoles[0].roleTypeId"/>
+					<set field="roleTypeId" from="partyRoles[0].roleTypeId" />
 				</if>
 			</row-actions>
 			<field name="username">
@@ -150,7 +153,7 @@
 			</field>
 			<field name="roleTypeId">
 				<default-field>
-					<display/>
+					<display />
 				</default-field>
 			</field>
 			<field name="locale">

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://moqui.org/xsd/entity-definition-1.6.xsd">
-    <entity entity-name="Hello" package-name="hello">
-        <field name="helloId" type="id" is-pk="true"/>
-        <field name="description" type="text-long"/>
-    </entity>
-</entities>

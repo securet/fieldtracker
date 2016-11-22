@@ -8,9 +8,21 @@
 			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
 			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" web-send-json-response="true">
 				<field-map field-name="statusId" value="ReqSubmitted"/>
+				<field-map field-name="username" value="${ec.user.username}"/>
+				<field-map field-name="requestDate" value="${ec.user.nowTimestamp}"/>
 				<field-map field-name="requestTypeEnumId" value="RqtAddPromoter"/>
 				<field-map field-name="description" value="${description}"/>
 				<field-map field-name="requestName" value="Request to approve the promoter for the store ${productStore.storeName}"/>
+				<field-map field-name="requestJson" value="${requestJsonStr}"/>
+			</service-call>
+		</actions>
+		<default-response type="none" />
+	</transition>
+	<transition name="updatePromoterRequest" method="post">
+		<actions>
+			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
+			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="result" web-send-json-response="true" >
+				<field-map field-name="username" value="${ec.user.username}"/>
 				<field-map field-name="requestJson" value="${requestJsonStr}"/>
 			</service-call>
 		</actions>
@@ -28,7 +40,7 @@
 					ec.web.sendJsonResponse(ec.message)
 		            return;
 				}
-	            File targetFile = new File((String) ec.factory.getRuntimePath() + '/db/snapshot/' + savedFilename)
+	            File targetFile = new File((String) ec.factory.getRuntimePath() + '/uploads/uid/' + savedFilename)
 	            println(targetFile.getName())
 	            if (targetFile.exists()) {
 					ec.message.addError("File ${filename} already exists"); 
@@ -48,8 +60,9 @@
 		<default-response type="none" />
 	</transition>
 
-	<subscreens default-item="FindRequests" always-use-full-path="true">
+	<subscreens default-item="FindRequests" always-use-full-path="true" >
 		<subscreens-item name="FindRequests" location="component://FieldTracker/screen/FieldTracker/Requests/FindRequests.xml" menu-include="true" />
+		<subscreens-item name="ApproveRejectPromoter" location="component://FieldTracker/screen/FieldTracker/Requests/ApproveRejectPromoter.xml" menu-include="false" />
 	</subscreens>
 	<widgets>
 		<subscreens-panel id="requests-panel" type="tab" />
