@@ -1,5 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
+    <service verb="create" noun="Account" authenticate="false">
+        <description>
+            Create a basic user account including:
+            - Party/Person
+            - UserAccount (with specified username or emailAddress for username)
+            - ContactMech/PartyContactMech for emailAddress (with EmailPrimary purpose)
+
+            At the end this optionally logs in the user (for this to work it must be run locally).
+        </description>
+        <in-parameters>
+            <auto-parameters entity-name="mantle.party.Person" include="nonpk"/>
+            <parameter name="firstName" required="true"/>
+            <parameter name="lastName" required="true"/>
+
+            <parameter name="disabled" default-value="N"/>
+            <parameter name="requirePasswordChange" default-value="N"/>
+
+            <parameter name="emailAddress" required="true"><text-email/></parameter>
+			<parameter name="contactNumber">
+				<text-digits></text-digits>
+			</parameter>
+			<parameter name="address1"/>
+			<parameter name="directions"/>
+            <parameter name="username" default-value="${emailAddress}"/>
+            <parameter name="newPassword"><description>If empty won't set a password, user will have to change or reset.</description></parameter>
+            <parameter name="newPasswordVerify"/>
+
+            <parameter name="currencyUomId"/>
+            <parameter name="locale"/>
+            <parameter name="timeZone"/>
+
+            <parameter name="userGroupId"/>
+            <parameter name="roleTypeId"/>
+            <parameter name="loginAfterCreate" type="Boolean" default="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="userId"/>
+            <parameter name="partyId" required="true"/>
+            <parameter name="emailContactMechId"/>
+        </out-parameters>
+        <actions>
+            <!-- do this first to get a password validation ASAP -->
+            <if condition="username">
+                <!-- see if username already in use -->
+                <entity-find entity-name="moqui.security.UserAccount" list="existingUaList">
+                    <econdition field-name="username"/></entity-find>
+                <if condition="existingUaList"><return error="true" message="Username [${username}] is already in use. Choose another."/></if>
+
+                <set field="userFullName" value="${ec.resource.expand('PartyFullNameTemplate','')}"/>
+                <if condition="newPassword"><then>
+                    <service-call name="org.moqui.impl.UserServices.create#UserAccount" in-map="context" out-map="newUaOut"/>
+                </then><else>
+                    <service-call name="create#moqui.security.UserAccount" in-map="context" out-map="newUaOut"/>
+                </else></if>
+                <set field="userId" from="newUaOut.userId"/>
+            </if>
+
+            <service-call name="create#mantle.party.Party" in-map="[partyTypeEnumId:'PtyPerson', disabled:disabled]" out-map="newPartyOut"/>
+            <set field="partyId" from="newPartyOut.partyId"/>
+            <service-call name="create#mantle.party.Person" in-map="context"/>
+            <if condition="roleTypeId">
+                <service-call name="create#mantle.party.PartyRole" in-map="[partyId:partyId, roleTypeId:roleTypeId]"/></if>
+
+            <!-- add the emailAddress -->
+            <service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut"
+                    in-map="[emailAddress:emailAddress, partyId:partyId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
+                    telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary']"/>
+            <set field="emailContactMechId" from="emailOut.contactMechId"/>
+
+            <if condition="username">
+                <!-- add the partyId to the UserAccount -->
+                <service-call name="update#moqui.security.UserAccount" in-map="[userId:newUaOut.userId, partyId:newPartyOut.partyId]"/>
+                <if condition="userGroupId">
+                    <service-call name="create#moqui.security.UserGroupMember"
+                            in-map="[userGroupId:userGroupId, userId:userId, fromDate:ec.user.nowTimestamp]"/>
+                </if>
+                <!-- login the user -->
+                <if condition="loginAfterCreate &amp;&amp; newPassword">
+                    <script>ec.user.loginUser(username, newPassword)</script></if>
+            </if>
+        </actions>
+    </service>
 	<service verb="updateAccountWithSingleRole" noun="Account">
 		<description>Update Person, UserAccount, and EmailPrimary.</description>
 		<in-parameters>
@@ -10,9 +92,17 @@
 			<parameter name="disabled" />
 			<parameter name="requirePasswordChange" />
 
+			<parameter name="emailContactMechId" />
 			<parameter name="emailAddress">
 				<text-email />
 			</parameter>
+			<parameter name="telecomContactMechId" />
+			<parameter name="contactNumber">
+				<text-digits></text-digits>
+			</parameter>
+			<parameter name="postalContactMechId" />
+			<parameter name="address1"/>
+			<parameter name="directions"/>
 			<parameter name="username" />
 
 			<parameter name="roleTypeId" />
@@ -32,7 +122,9 @@
 			</if>
 			<service-call name="update#mantle.party.Party" in-map="context" />
 			<service-call name="update#mantle.party.Person" in-map="context" />
-			<service-call name="mantle.party.ContactServices.update#PartyContactOther" in-map="[infoString:emailAddress, partyId:partyId, contactMechPurposeId:'EmailPrimary']" />
+            <service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut"
+                    in-map="[emailAddress:emailAddress, partyId:partyId,emailContactMechId:emailContactMechId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
+                    telecomContactMechId:telecomContactMechId,telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary',postalContactMechId:postalContactMechId]"/>
 			<log level="info" message="Did this get called?"/>
 			<if condition="roleTypeId">
 	            <entity-find-one entity-name="mantle.party.PartyRole" value-field="partyRole"/>

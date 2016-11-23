@@ -10,7 +10,7 @@
 	</transition>
 	<transition name="createUser">
 		<actions>
-			<service-call name="mantle.party.PartyServices.create#Account" in-map="context + [loginAfterCreate:'false']" out-map="context" />
+			<service-call name="party.PartyServices.create#Account" in-map="context + [loginAfterCreate:'false']" out-map="context" />
 			<service-call name="create#moqui.security.UserGroupMember" in-map="[userGroupId:'FIELD_TRACKER_USER', userId:context.userId, fromDate:ec.user.nowTimestamp]" />
 		</actions>
 		<default-response url="../FindUser" />
@@ -72,8 +72,23 @@
 							<text-line size="15" />
 						</default-field>
 					</field>
-					<field name="emailAddress">
+					<field name="address1" >
 						<default-field>
+							<hidden default-value="NA"/>
+						</default-field>
+					</field>
+					<field name="directions" >
+						<default-field title="Address">
+							<text-area />
+						</default-field>
+					</field>
+					<field name="emailAddress">
+						<default-field title="Email Id">
+							<text-line />
+						</default-field>
+					</field>
+					<field name="contactNumber" >
+						<default-field title="Mobile">
 							<text-line />
 						</default-field>
 					</field>

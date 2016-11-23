@@ -37,10 +37,10 @@
 
 	<actions>
 		<entity-find-one entity-name="mantle.party.PersonAndUserAccount" value-field="personAndUserAccount" />
-		<service-call name="mantle.party.ContactServices.get#PrimaryEmailAddress" out-map="primaryEmail" in-map="[partyId:partyId]" />
+		<!-- <service-call name="mantle.party.ContactServices.get#PrimaryEmailAddress" out-map="primaryEmail" in-map="[partyId:partyId]" /> -->
 
-		<service-call name="mantle.party.ContactServices.get#PartyContactInfo" out-map="paymentContactInfo" in-map="[partyId:partyId, postalContactMechPurposeId:'PostalPayment',
-                    telecomContactMechPurposeId:'PhonePayment', emailContactMechPurposeId:'EmailPayment']" />
+		<service-call name="mantle.party.ContactServices.get#PartyContactInfo" out-map="paymentContactInfo" in-map="[partyId:partyId, postalContactMechPurposeId:'PostalPrimary',
+                    telecomContactMechPurposeId:'PhonePrimary', emailContactMechPurposeId:'EmailPrimary']" />
 		<set field="paymentInfoFlat" from="StupidUtilities.flattenNestedMap(paymentContactInfo)" />
 		<set field="contactInfo" from="paymentContactInfo" />
 
@@ -110,7 +110,7 @@
 					</field>
 					<field name="username">
 						<default-field>
-							<text-line size="20" />
+							<label text="${username}"/>
 						</default-field>
 					</field>
 					<field name="firstName">
@@ -131,8 +131,38 @@
 							</link>
 						</default-field>
 					</field>
-					<field name="emailAddress" from="primaryEmail.emailAddress">
+					<field name="postalContactMechId" from="paymentContactInfo.postalContactMechId">
 						<default-field>
+							<hidden/>
+						</default-field>
+					</field>
+					<field name="address1" >
+						<default-field>
+							<hidden default-value="NA"/>
+						</default-field>
+					</field>
+					<field name="directions" from="paymentContactInfo.postalAddress?.directions">
+						<default-field title="Address">
+							<text-area />
+						</default-field>
+					</field>
+					<field name="emailContactMechId" from="paymentContactInfo.emailContactMechId">
+						<default-field>
+							<hidden/>
+						</default-field>
+					</field>
+					<field name="emailAddress" from="paymentContactInfo.emailAddress">
+						<default-field title="Email Id">
+							<text-line />
+						</default-field>
+					</field>
+					<field name="telecomContactMechId" from="paymentContactInfo.telecomContactMechId">
+						<default-field>
+							<hidden/>
+						</default-field>
+					</field>
+					<field name="contactNumber" from="paymentContactInfo.telecomNumber?.contactNumber">
+						<default-field title="Mobile">
 							<text-line />
 						</default-field>
 					</field>
