@@ -22,7 +22,9 @@
 			<set field="createUserInput.emailAddress" from="requestJsonParsed.requestInfo.emailId" />
 			<set field="createUserInput.roleTypeId" value="FieldExecutiveOnPremise" />
 			<set field="createUserInput.username" from="requestJsonParsed.requestInfo.emailId" />
-			<set field="createUserInput.phone" from="requestJsonParsed.requestInfo.phone" />
+			<set field="createUserInput.address1"  default-value="none"/>
+			<set field="createUserInput.directions" from="requestJsonParsed.requestInfo.address" />
+			<set field="createUserInput.contactNumber" from="requestJsonParsed.requestInfo.phone" />
 			<set field="genPassword" from="StupidUtilities.getRandomString(3) + 'a1!'" />
 			<set field="createUserInput.newPassword" from="genPassword" />
 			<set field="createUserInput.newPasswordVerify" from="genPassword" />
