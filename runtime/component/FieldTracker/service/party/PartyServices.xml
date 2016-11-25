@@ -23,6 +23,9 @@
 			</parameter>
 			<parameter name="address1"/>
 			<parameter name="directions"/>
+			<parameter name="aadharIdPath"/>
+			<parameter name="userPhotoPath"/>
+			<parameter name="addressIdPath"/>
             <parameter name="username" default-value="${emailAddress}"/>
             <parameter name="newPassword"><description>If empty won't set a password, user will have to change or reset.</description></parameter>
             <parameter name="newPasswordVerify"/>
@@ -68,6 +71,15 @@
                     in-map="[emailAddress:emailAddress, partyId:partyId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
                     telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary']"/>
             <set field="emailContactMechId" from="emailOut.contactMechId"/>
+            <if condition="aadharIdPath">
+				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'aadharIdPath', docPath:aadharIdPath]" />
+			</if>
+            <if condition="userPhotoPath">
+				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'userPhotoPath', docPath:userPhotoPath]" />
+			</if>
+            <if condition="addressIdPath">
+				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'addressIdPath', docPath:addressIdPath]" />
+			</if>
 
             <if condition="username">
                 <!-- add the partyId to the UserAccount -->

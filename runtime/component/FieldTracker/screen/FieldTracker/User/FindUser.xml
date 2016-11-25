@@ -10,6 +10,47 @@
 	</transition>
 	<transition name="createUser">
 		<actions>
+			<script>
+				Map uploadFileToRuntime(snapshotFile,purpose,pathToSave){
+					if(org.moqui.impl.StupidJavaUtilities.isEmpty(snapshotFile.getName())){
+			            ec.message.addError(purpose + " file is required"); 
+			            return;
+					}
+		            String filename = snapshotFile.getName();
+		            String fileExt = org.apache.commons.io.FilenameUtils.getExtension(filename);
+		            String savedFilename = purpose + "_" + StupidUtilities.getRandomString(6) + "_" + System.currentTimeMillis() + "." + fileExt;
+		            if (!(filename.endsWith(".jpg") || filename.endsWith(".png"))) { 
+			            ec.message.addError("File ${filename} is not a jpg/png file, should be a zip containing one or more xml data files"); 
+			            return;
+					}
+		            File targetFile = new File((String) ec.factory.getRuntimePath() + pathToSave + savedFilename)
+		            if (targetFile.exists()) {
+						ec.message.addError("File ${filename} already exists"); 
+						return; 
+					}
+		            InputStream fileStream = snapshotFile.getInputStream()
+		            try {
+						targetFile.append(fileStream)
+					} finally {
+						fileStream.close()
+					}
+					result = [:];
+					result.savedFilename=savedFilename;
+					return result;
+				}
+				result = uploadFileToRuntime(userPhoto,"userPhoto",'/uploads/uid/');
+				if(result){
+					context.userPhotoPath = result.savedFilename;
+				}
+				result = uploadFileToRuntime(addressId,"addressId",'/uploads/uid/');
+				if(result){
+					context.addressIdPath = result.savedFilename			
+				}
+				result = uploadFileToRuntime(aadharId,"aadharId",'/uploads/uid/');
+				if(result){
+					context.aadharIdPath = result.savedFilename			
+				}
+			</script>
 			<service-call name="party.PartyServices.create#Account" in-map="context + [loginAfterCreate:'false']" out-map="context" />
 			<service-call name="create#moqui.security.UserGroupMember" in-map="[userGroupId:'FIELD_TRACKER_USER', userId:context.userId, fromDate:ec.user.nowTimestamp]" />
 		</actions>
@@ -72,24 +113,39 @@
 							<text-line size="15" />
 						</default-field>
 					</field>
-					<field name="address1" >
-						<default-field>
-							<hidden default-value="NA"/>
-						</default-field>
-					</field>
-					<field name="directions" >
-						<default-field title="Address">
-							<text-area />
-						</default-field>
-					</field>
 					<field name="emailAddress">
 						<default-field title="Email Id">
 							<text-line />
 						</default-field>
 					</field>
-					<field name="contactNumber" >
+					<field name="contactNumber">
 						<default-field title="Mobile">
 							<text-line />
+						</default-field>
+					</field>
+					<field name="address1">
+						<default-field>
+							<hidden default-value="NA" />
+						</default-field>
+					</field>
+					<field name="directions">
+						<default-field title="Address">
+							<text-area />
+						</default-field>
+					</field>
+					<field name="userPhoto">
+						<default-field>
+							<file />
+						</default-field>
+					</field>
+					<field name="addressId">
+						<default-field>
+							<file />
+						</default-field>
+					</field>
+					<field name="aadharId">
+						<default-field>
+							<file />
 						</default-field>
 					</field>
 					<field name="roleTypeId">
