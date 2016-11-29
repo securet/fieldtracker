@@ -137,7 +137,6 @@
             <service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut"
                     in-map="[emailAddress:emailAddress, partyId:partyId,emailContactMechId:emailContactMechId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
                     telecomContactMechId:telecomContactMechId,telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary',postalContactMechId:postalContactMechId]"/>
-			<log level="info" message="Did this get called?"/>
 			<if condition="roleTypeId">
 	            <entity-find-one entity-name="mantle.party.PartyRole" value-field="partyRole"/>
 	            <entity-delete-by-condition entity-name="mantle.party.PartyRole" >
@@ -148,5 +147,15 @@
 				</if>
 			</if>
 		</actions>
+	</service>
+	<service verb="getUserInfo" noun="Party">
+		<out-parameters>
+			<parameter name="user"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find entity-name="PersonAndUserAccountWithRole" list="user">
+				<econdition field-name="username" from="ec.user.username"/>
+			</entity-find>
+		</actions>	
 	</service>
 </services>

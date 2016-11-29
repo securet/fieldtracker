@@ -72,6 +72,7 @@
 		<actions>
 			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList">
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
+				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 				<order-by field-name="priority" />
 			</entity-find>
 		</actions>
@@ -113,7 +114,7 @@
 			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
 			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
 			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" out-map-add-to-existing="false">
-				<field-map field-name="productStoreId"/>
+				<field-map field-name="productStoreId" />
 				<field-map field-name="statusId" value="ReqSubmitted" />
 				<field-map field-name="username" value="${ec.user.username}" />
 				<field-map field-name="requestDate" value="${ec.user.nowTimestamp}" />
@@ -147,13 +148,28 @@
 		</out-parameters>
 		<actions>
 			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
-			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="result" out-map-add-to-existing="false" >
+			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="result" out-map-add-to-existing="false">
 				<field-map field-name="username" value="${ec.user.username}" />
 				<field-map field-name="requestJson" value="${requestJsonStr}" />
 			</service-call>
 			<entity-find-one value-field="request" entity-name="Request">
-				<field-map field-name="requestId" from="result.requestId"/>
+				<field-map field-name="requestId" from="result.requestId" />
 			</entity-find-one>
+		</actions>
+	</service>
+	<service verb="userRequests" noun="Request">
+		<in-parameters>
+			<parameter name="statusId" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="requestList"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList">
+				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
+				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
+				<order-by field-name="priority" />
+			</entity-find>
 		</actions>
 	</service>
 </services>
