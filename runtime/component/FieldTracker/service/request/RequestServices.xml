@@ -104,6 +104,7 @@
 			<parameter name="addressIdPath" required="true" />
 			<parameter name="roleTypeId" />
 			<parameter name="description" required="true" />
+			<parameter name="productStoreId" required="true" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="request"></parameter>
@@ -112,6 +113,7 @@
 			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
 			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
 			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" out-map-add-to-existing="false">
+				<field-map field-name="productStoreId"/>
 				<field-map field-name="statusId" value="ReqSubmitted" />
 				<field-map field-name="username" value="${ec.user.username}" />
 				<field-map field-name="requestDate" value="${ec.user.nowTimestamp}" />
@@ -138,6 +140,7 @@
 			<parameter name="addressIdPath" required="true" />
 			<parameter name="roleTypeId" />
 			<parameter name="description" required="true" />
+			<parameter name="productStoreId" required="true" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="request"></parameter>
