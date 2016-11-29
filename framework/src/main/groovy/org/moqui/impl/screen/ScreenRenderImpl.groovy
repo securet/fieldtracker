@@ -308,7 +308,7 @@ class ScreenRenderImpl implements ScreenRender {
                         form with hidden input fields instead, or declare the transition as read-only.""")
                 }
                 // require a moquiSessionToken parameter for all but get
-                if (request.getMethod().toLowerCase() != "get" && webappInfo.requireSessionToken &&
+                if (request.getMethod().toLowerCase() != "get" && !targetTransition.location.contains("/rest.xml") && webappInfo.requireSessionToken &&
                         targetTransition.getRequireSessionToken() &&
                         !"true".equals(request.getAttribute("moqui.session.token.created")) &&
                         !"true".equals(request.getAttribute("moqui.request.authenticated"))) {

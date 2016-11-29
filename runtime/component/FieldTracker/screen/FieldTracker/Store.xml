@@ -7,8 +7,8 @@
 		<default-response type="none" />
 	</transition>
 
-	<transition name="update" method="post">
-		<service-call name="update#mantle.product.store.ProductStore" in-map="ec.web.parameters" web-send-json-response="true" />
+	<transition name="update" method="put">
+		<service-call name="update#mantle.product.store.ProductStore" in-map="ec.web.parameters" out-map="result" web-send-json-response="true" />
 		<default-response type="none" />
 	</transition>
 

@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
-	<service verb="create" noun="Store" >
+	<service verb="create" noun="Store">
 		<description>Create Store</description>
 		<in-parameters>
-			<parameter name="storeName" required="true"/>
-			<parameter name="address" required="true"/>
-			<parameter name="latitude" required="true" format="#0.00"/>
-			<parameter name="longitude" required="true" format="#0.00"/>
-			<parameter name="proximityRadius" required="true" format="#0.00"/>
+			<parameter name="storeName" required="true" />
+			<parameter name="address" required="true" />
+			<parameter name="latitude" required="true" format="#0.00" />
+			<parameter name="longitude" required="true" format="#0.00" />
+			<parameter name="proximityRadius" required="true" format="#0.00" />
 		</in-parameters>
 		<actions>
+		</actions>
+	</service>
+	<service verb="userStores" noun="Store">
+		<in-parameters>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="userStores" type="list"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores">
+				<econdition value="${ec.getUser().getUserAccount().username}" field-name="username" />
+			</entity-find>
 		</actions>
 	</service>
 </services>

@@ -4,24 +4,13 @@
 	<!-- Rest full implementations -->
 	<transition name="createPromoterRequest" method="post">
 		<actions>
-			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
-			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
-			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" web-send-json-response="true">
-				<field-map field-name="statusId" value="ReqSubmitted"/>
-				<field-map field-name="username" value="${ec.user.username}"/>
-				<field-map field-name="requestDate" value="${ec.user.nowTimestamp}"/>
-				<field-map field-name="requestTypeEnumId" value="RqtAddPromoter"/>
-				<field-map field-name="description" value="${description}"/>
-				<field-map field-name="requestName" value="Request to approve the promoter for the store ${productStore.storeName}"/>
-				<field-map field-name="requestJson" value="${requestJsonStr}"/>
-			</service-call>
+			<service-call name="request.RequestServices.createPromoterRequest#Request" in-map="context" out-map="result" web-send-json-response="true" />
 		</actions>
 		<default-response type="none" />
 	</transition>
 	<transition name="updatePromoterRequest" method="post">
 		<actions>
-			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
-			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="result" web-send-json-response="true" >
+			<service-call name="request.RequestServices.createPromoterRequest#Request" in-map="context" out-map="result" web-send-json-response="true" >
 				<field-map field-name="username" value="${ec.user.username}"/>
 				<field-map field-name="requestJson" value="${requestJsonStr}"/>
 			</service-call>

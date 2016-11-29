@@ -22,7 +22,7 @@
 			<set field="createUserInput.emailAddress" from="requestJsonParsed.requestInfo.emailId" />
 			<set field="createUserInput.roleTypeId" value="FieldExecutiveOnPremise" />
 			<set field="createUserInput.username" from="requestJsonParsed.requestInfo.emailId" />
-			<set field="createUserInput.address1"  default-value="none"/>
+			<set field="createUserInput.address1" default-value="none" />
 			<set field="createUserInput.directions" from="requestJsonParsed.requestInfo.address" />
 			<set field="createUserInput.contactNumber" from="requestJsonParsed.requestInfo.phone" />
 			<set field="genPassword" from="StupidUtilities.getRandomString(3) + 'a1!'" />
@@ -62,4 +62,95 @@
 		</actions>
 	</service>
 
+	<service verb="getPartyRequests" noun="Request">
+		<in-parameters>
+			<parameter name="statusId" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="requestList"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList">
+				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
+				<order-by field-name="priority" />
+			</entity-find>
+		</actions>
+	</service>
+	<service verb="getPartyRequest" noun="Request">
+		<in-parameters>
+			<parameter name="requestId" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="request"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find-one entity-name="mantle.request.RequestAndParty" value-field="request">
+				<field-map field-name="requestId" />
+				<field-map field-name="partyId" from="ec.user.userAccount.partyId" />
+			</entity-find-one>
+		</actions>
+	</service>
+	<service verb="createPromoterRequest" noun="Request">
+		<in-parameters>
+			<parameter name="firstName" required="true" />
+			<parameter name="lastName" required="true" />
+			<parameter name="productStoreId" required="true" />
+			<parameter name="phone" required="true" />
+			<parameter name="emailId" required="true" />
+			<parameter name="address" required="true" />
+			<parameter name="weeklyOff" required="false" />
+			<parameter name="aadharIdPath" required="true" />
+			<parameter name="userPhoto" required="true" />
+			<parameter name="addressIdPath" required="true" />
+			<parameter name="roleTypeId" />
+			<parameter name="description" required="true" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="request"></parameter>
+		</out-parameters>
+		<actions>
+			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
+			<entity-find-one entity-name="mantle.product.store.ProductStore" value-field="productStore" />
+			<service-call name="mantle.request.RequestServices.create#Request" out-map="result" out-map-add-to-existing="false">
+				<field-map field-name="statusId" value="ReqSubmitted" />
+				<field-map field-name="username" value="${ec.user.username}" />
+				<field-map field-name="requestDate" value="${ec.user.nowTimestamp}" />
+				<field-map field-name="requestTypeEnumId" value="RqtAddPromoter" />
+				<field-map field-name="description" value="${description}" />
+				<field-map field-name="requestName" value="Request to approve the promoter for the store ${productStore.storeName}" />
+				<field-map field-name="requestJson" value="${requestJsonStr}" />
+			</service-call>
+			<entity-find-one value-field="request" entity-name="Request" auto-field-map="result"></entity-find-one>
+		</actions>
+	</service>
+	<service verb="updatePromoterRequest" noun="Request">
+		<in-parameters>
+			<parameter name="requestId" required="true" />
+			<parameter name="firstName" required="true" />
+			<parameter name="lastName" required="true" />
+			<parameter name="productStoreId" required="true" />
+			<parameter name="phone" required="true" />
+			<parameter name="emailId" required="true" />
+			<parameter name="address" required="true" />
+			<parameter name="weeklyOff" required="false" />
+			<parameter name="aadharIdPath" required="true" />
+			<parameter name="userPhoto" required="true" />
+			<parameter name="addressIdPath" required="true" />
+			<parameter name="roleTypeId" />
+			<parameter name="description" required="true" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="request"></parameter>
+		</out-parameters>
+		<actions>
+			<script location="component://FieldTracker/script/FieldTracker/request/createPromoterRequest.groovy"></script>
+			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="result" out-map-add-to-existing="false" >
+				<field-map field-name="username" value="${ec.user.username}" />
+				<field-map field-name="requestJson" value="${requestJsonStr}" />
+			</service-call>
+			<entity-find-one value-field="request" entity-name="Request">
+				<field-map field-name="requestId" from="result.requestId"/>
+			</entity-find-one>
+		</actions>
+	</service>
 </services>

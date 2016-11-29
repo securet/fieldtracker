@@ -49,4 +49,14 @@
 	<moqui.basic.Enumeration description="User Photo" enumId="userPhotoPath" enumTypeId="PartyIdentificationDocType" />
 	<moqui.basic.Enumeration description="Address Id" enumId="addressIdPath" enumTypeId="PartyIdentificationDocType" />
 
+    <artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
+        <artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft"/>
+        <!-- Full permissions for the ADMIN user group -->
+        <authz artifactAuthzId="FIELD_TRACKER_API_ADMIN" userGroupId="ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
+    </artifactGroups>
+    <artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
+        <artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft/stores"/>
+        <!-- Full permissions for the ADMIN user group -->
+        <authz artifactAuthzId="FIELD_TRACKER_USER" userGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
+    </artifactGroups>
 </entity-facade-xml>
