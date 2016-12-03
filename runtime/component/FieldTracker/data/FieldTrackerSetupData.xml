@@ -49,14 +49,22 @@
 	<moqui.basic.Enumeration description="User Photo" enumId="userPhotoPath" enumTypeId="PartyIdentificationDocType" />
 	<moqui.basic.Enumeration description="Address Id" enumId="addressIdPath" enumTypeId="PartyIdentificationDocType" />
 
-    <artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
-        <artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft"/>
-        <!-- Full permissions for the ADMIN user group -->
-        <authz artifactAuthzId="FIELD_TRACKER_API_ADMIN" userGroupId="ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
-    </artifactGroups>
-    <artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
-        <artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft/stores"/>
-        <!-- Full permissions for the ADMIN user group -->
-        <authz artifactAuthzId="FIELD_TRACKER_USER" userGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
-    </artifactGroups>
+	<artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
+		<artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft" />
+		<!-- Full permissions for the ADMIN user group -->
+		<authz artifactAuthzId="FIELD_TRACKER_API_ADMIN" userGroupId="ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+	</artifactGroups>
+	<artifactGroups artifactGroupId="FIELD_TRACKER_API" description="Field Tracker REST API (via root resource)">
+		<artifacts artifactTypeEnumId="AT_REST_PATH" inheritAuthz="Y" artifactName="/ft/stores" />
+		<!-- Full permissions for the ADMIN user group -->
+		<authz artifactAuthzId="FIELD_TRACKER_USER" userGroupId="FIELD_TRACKER_USER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" />
+	</artifactGroups>
+
+	<!-- Mail templates -->
+	<moqui.basic.email.EmailServer emailServerId="ALLSMART" smtpHost="smtp.gmail.com" smtpPort="465" smtpStartTls="N" smtpSsl="Y" storeHost="" storePort="993" storeProtocol="imaps" storeFolder="" storeDelete="N" storeMarkSeen="Y" storeSkipSeen="Y" mailUsername="test@securet.in" mailPassword="test@123" />
+	<moqui.basic.email.EmailTemplate emailTemplateId="PROMOTER_REQSUBMITTED" description="Promoter Request Submitted" emailServerId="ALLSMART" bodyScreenLocation="component://FieldTracker/screen/templates/RequestSubmittedNotification.xml" webappName="webroot" fromAddress="test@securet.in" ccAddresses="" bccAddresses="" subject="Request Submitted ${requestId}" sendPartial="Y" />
+	<moqui.basic.email.EmailTemplate emailTemplateId="PROMOTER_REQREJECTED" description="Promoter Request Rejected" emailServerId="ALLSMART" bodyScreenLocation="component://FieldTracker/screen/templates/RequestSubmittedNotification.xml" webappName="webroot" fromAddress="test@securet.in" ccAddresses="" bccAddresses="" subject="Request Submitted ${requestId}" sendPartial="Y" />
+	<moqui.basic.email.EmailTemplate emailTemplateId="PROMOTER_REQCOMPLETED" description="Promoter Request Completed" emailServerId="ALLSMART" bodyScreenLocation="component://FieldTracker/screen/templates/RequestSubmittedNotification.xml" webappName="webroot" fromAddress="test@securet.in" ccAddresses="" bccAddresses="" subject="Request Submitted ${requestId}" sendPartial="Y" />
+	<!-- Mail templates -->
+
 </entity-facade-xml>

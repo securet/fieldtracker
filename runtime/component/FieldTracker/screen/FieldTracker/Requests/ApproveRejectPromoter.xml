@@ -29,9 +29,6 @@
 			JsonSlurper jsonSlurper = new JsonSlurper();
 			requestJsonParsed = jsonSlurper.parseText(promoterAppRequest.requestJson);
 		</script>
-		<entity-find-one value-field="productStore" entity-name="ProductStore" cache="true">
-			<field-map field-name="productStoreId" from="requestJsonParsed.requestInfo.productStoreId" />
-		</entity-find-one>
 		<entity-find entity-name="RequestHistory" list="requestHistory">
 			<econdition field-name="requestId"/>
 			<order-by field-name="-lastUpdatedStamp" />
@@ -43,7 +40,6 @@
 				<label text="Status for Promoter Request of ${requestJsonParsed.requestInfo.firstName} ${requestJsonParsed.requestInfo.lastName}" type="h5" />
 			</box-header>
 			<box-body>
-
 				<container-dialog button-text="History" id="RequestHistory">
 					<form-list name="RequestHistoryDialog" list="requestHistory" list-entry="requestHistoryItem">
 						<row-actions>
@@ -56,110 +52,7 @@
 						</field>
 					</form-list>
 				</container-dialog>
-				<form-single name="PromoterForm" transition="updatePromoterApproval" map="promoterAppRequest">
-					<field name="requestId">
-						<default-field>
-							<display also-hidden="true"></display>
-						</default-field>
-					</field>
-					<field name="statusId">
-						<default-field>
-							<display-entity entity-name="StatusItem" also-hidden="true"></display-entity>
-						</default-field>
-					</field>
-					<field name="name">
-						<default-field>
-							<display text="${requestJsonParsed.requestInfo.firstName} ${requestJsonParsed.requestInfo.lastName} "></display>
-						</default-field>
-					</field>
-					<field name="userPhoto">
-						<default-field>
-							<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}" url-type="plain" target-window="_blank">
-								<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}"></image>
-							</link>
-						</default-field>
-					</field>
-					<field name="storeName">
-						<default-field>
-							<display text="${productStore.storeName}"></display>
-						</default-field>
-					</field>
-					<field name="emailId">
-						<default-field>
-							<display text="${requestJsonParsed.requestInfo.emailId}"></display>
-						</default-field>
-					</field>
-					<field name="address">
-						<default-field>
-							<display text="${requestJsonParsed.requestInfo.address}"></display>
-						</default-field>
-					</field>
-					<field name="phone">
-						<default-field>
-							<display text="${requestJsonParsed.requestInfo.phone}"></display>
-						</default-field>
-					</field>
-					<field name="aadharId">
-						<default-field>
-							<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}" url-type="plain" target-window="_blank">
-								<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}"></image>
-							</link>
-						</default-field>
-					</field>
-					<field name="addressId">
-						<default-field>
-							<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}" url-type="plain" target-window="_blank">
-								<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}"></image>
-							</link>
-						</default-field>
-					</field>
-					<field name="details">
-						<default-field title="Details">
-							<display text="${description}" />
-						</default-field>
-					</field>
-					<field name="description" hide="!statusId.equals('ReqSubmitted')" from="none">
-						<default-field title="Comments">
-							<text-area />
-						</default-field>
-					</field>
-					<field name="approve" hide="!statusId.equals('ReqSubmitted')">
-						<default-field>
-							<submit text="Approve"></submit>
-						</default-field>
-					</field>
-					<field name="reject" hide="!statusId.equals('ReqSubmitted')">
-						<default-field>
-							<submit text="Reject"></submit>
-						</default-field>
-					</field>
-					<field name="back" hide="statusId.equals('ReqSubmitted')">
-						<default-field title="">
-							<link url="../../Requests" link-type="anchor-button" text="Back"></link>
-						</default-field>
-					</field>
-					<field-layout>
-						<field-group title="">
-							<field-ref name="requestId" />
-							<field-ref name="statusId" />
-							<field-ref name="name" />
-							<field-ref name="userPhoto" />
-							<field-ref name="storeName" />
-							<field-ref name="address" />
-							<field-ref name="emailId" />
-							<field-ref name="phone" />
-							<field-ref name="aadharId" />
-							<field-ref name="addressId" />
-							<field-ref name="details" />
-							<field-ref name="description" />
-						</field-group>
-						<field-row-big title="">
-							<field-ref name="back" />
-							<field-ref name="approve" />
-							<field-ref name="reject" />
-						</field-row-big>
-					</field-layout>
-				</form-single>
+				<include-screen location="component://FieldTracker/screen/FieldTracker/Requests/RequestForm.xml" share-scope="true"/>
 			</box-body>
 		</container-box>
 	</widgets>

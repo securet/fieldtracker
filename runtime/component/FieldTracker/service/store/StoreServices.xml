@@ -24,4 +24,16 @@
 			</entity-find>
 		</actions>
 	</service>
+	<service verb="getStoreRoleContact" noun="Store">
+		<in-parameters>
+			<parameter name="productStoreId" required="true"></parameter>
+			<parameter name="roleTypeId"></parameter>
+		</in-parameters>
+		<out-parameters>
+			<parameter name=""></parameter>
+		</out-parameters>
+		<actions>
+			
+		</actions>
+	</service>
 </services>

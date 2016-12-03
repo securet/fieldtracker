@@ -1,0 +1,29 @@
+<eecas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-eca-2.0.xsd">
+	<eeca entity="mantle.request.Request" on-create="true" on-update="true" on-delete="true" get-entire-entity="true" get-original-value="true">
+		<actions>
+			<if condition="requestTypeEnumId=='RqtAddPromoter'">
+				<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+					<econdition field-name="productStoreId" />
+				</entity-find>
+				<script>
+					toAddressList = [];
+				</script>
+				<iterate entry="productStoreRole" list="productStoreRoles">
+					<service-call name="mantle.party.ContactServices.get#PartyContactInfo" out-map-add-to-existing="false" out-map="contactInfo">
+						<field-map field-name="partyId" from="productStoreRole.partyId" />
+						<field-map field-name="emailContactMechPurposeId" value="EmailPrimary" />
+						<field-map field-name="telecomContactMechPurposeId" value="PhonePrimary" />
+					</service-call>
+					<script>
+						toAddressList.add(contactInfo.emailAddress);
+					</script>
+				</iterate>
+				<service-call name="org.moqui.impl.EmailServices.send#EmailTemplate" async="false">
+					<field-map field-name="emailTemplateId" value="PROMOTER_${statusId.toUpperCase()}" />
+					<field-map field-name="toAddresses" from="org.moqui.impl.StupidJavaUtilities.toPlainString(toAddressList)" />
+					<field-map field-name="bodyParameters" from="context.entityValue" />
+				</service-call>
+			</if>
+		</actions>
+	</eeca>
+</eecas>

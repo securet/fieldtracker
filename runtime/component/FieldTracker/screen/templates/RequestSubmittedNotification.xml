@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-include="false">
+	<actions>
+		<script>
+				import groovy.json.JsonSlurper;
+				JsonSlurper jsonSlurper = new JsonSlurper();
+				requestJsonParsed = jsonSlurper.parseText(requestJson);
+		</script>
+		<set field="hideButtons" value="true"/>
+	</actions>
+	<widgets>
+		<render-mode>
+			<text type="html"><![CDATA[
+			<html>
+				<head>
+					<style type="text/css">
+						.form-group{
+							display: block;
+						}
+						.form-horizontal .control-label {
+						    padding-top: 7px;
+						    margin-bottom: 0;
+						    text-align: right;
+							font-weight: bold;
+						}
+						.col-sm-2 {
+						    width: 100px;;
+						}
+						.col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 {
+						    display:inline-block;
+						}
+						
+						.col-sm-10 {
+						    width: 250px;
+						}
+						#PromoterForm_back{
+							display: none;
+						}
+					</style>
+				</head>	
+				<body>
+			]]></text>
+		</render-mode>
+		<container>
+			<label text="Request Has been ${statusId}: ${requestId}" type="h2" />
+		</container>
+		<container>
+			<include-screen location="component://FieldTracker/screen/FieldTracker/Requests/RequestForm.xml" share-scope="true" />
+		</container>
+		<render-mode>
+			<text type="html"><![CDATA[</body></html>]]></text>
+		</render-mode>
+	</widgets>
+</screen>

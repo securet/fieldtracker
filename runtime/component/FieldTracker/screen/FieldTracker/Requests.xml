@@ -8,11 +8,43 @@
 		</actions>
 		<default-response type="none" />
 	</transition>
+	<transition name="testRequestMail" method="get" read-only="true">
+		<actions>
+			<log level="info" message="context : ${requestId}" />
+			<entity-find-one value-field="request" entity-name="mantle.request.Request">
+				<field-map field-name="requestId" />
+			</entity-find-one>
+			<script>
+				context.putAll(request);
+			</script>
+			<if condition="requestTypeEnumId=='RqtAddPromoter'">
+				<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+					<econdition field-name="productStoreId" />
+				</entity-find>
+				<iterate entry="productStoreRole" list="productStoreRoles">
+					<log level="info" message="productStoreRole ${productStoreRole}" />
+					<service-call name="mantle.party.ContactServices.get#PartyContactInfo" out-map-add-to-existing="false" out-map="contactInfo">
+						<field-map field-name="partyId" from="productStoreRole.partyId" />
+						<field-map field-name="emailContactMechPurposeId" value="EmailPrimary" />
+						<field-map field-name="telecomContactMechPurposeId" value="PhonePrimary" />
+					</service-call>
+					<log level="info" message="found contact info ${contactInfo.emailAddress} ${contactInfo.telecomNumber?.contactNumber}" />
+					<service-call name="org.moqui.impl.EmailServices.send#EmailTemplate" async="false">
+						<field-map field-name="emailTemplateId" value="PROMOTER_${statusId.toUpperCase()}" />
+						<field-map field-name="toAddresses" value="test@securet.in" />
+						<field-map field-name="bodyParameters" from="request" />
+					</service-call>
+				</iterate>
+			</if>
+			<!-- <service-call name="org.moqui.impl.EmailServices.send#EmailTemplate" in-map="context" async="true" > </service-call> -->
+		</actions>
+		<default-response type="none" />
+	</transition>
 	<transition name="updatePromoterRequest" method="post">
 		<actions>
-			<service-call name="request.RequestServices.createPromoterRequest#Request" in-map="context" out-map="result" web-send-json-response="true" >
-				<field-map field-name="username" value="${ec.user.username}"/>
-				<field-map field-name="requestJson" value="${requestJsonStr}"/>
+			<service-call name="request.RequestServices.createPromoterRequest#Request" in-map="context" out-map="result" web-send-json-response="true">
+				<field-map field-name="username" value="${ec.user.username}" />
+				<field-map field-name="requestJson" value="${requestJsonStr}" />
 			</service-call>
 		</actions>
 		<default-response type="none" />
@@ -49,7 +81,7 @@
 		<default-response type="none" />
 	</transition>
 
-	<subscreens default-item="FindRequests" always-use-full-path="true" >
+	<subscreens default-item="FindRequests" always-use-full-path="true">
 		<subscreens-item name="FindRequests" location="component://FieldTracker/screen/FieldTracker/Requests/FindRequests.xml" menu-include="true" />
 		<subscreens-item name="ApproveRejectPromoter" location="component://FieldTracker/screen/FieldTracker/Requests/ApproveRejectPromoter.xml" menu-include="false" />
 	</subscreens>
