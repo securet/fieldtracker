@@ -30,25 +30,23 @@
 		</resource>
 	</resource>
 	<resource name="request" description="Lookup for request">
-		<id name="requestId">
-			<method type="get">
-				<service name="request.RequestServices.getPartyRequest#Request" />
-			</method>
-		</id>
-		<resource name="list">
-			<method type="get">
-				<service name="request.RequestServices.getPartyRequests#Request" />
-			</method>
-		</resource>
 		<resource name="promoter">
 			<method type="post">
 				<service name="request.RequestServices.createPromoterRequest#Request" />
 			</method>
 			<id name="requestId">
+				<method type="get">
+					<service name="request.RequestServices.getPartyRequest#Request" />
+				</method>
 				<method type="put">
 					<service name="request.RequestServices.updatePromoterRequest#Request" />
 				</method>
 			</id>
+			<resource name="list">
+				<method type="get">
+					<service name="request.RequestServices.getPartyRequests#Request" />
+				</method>
+			</resource>
 		</resource>
 	</resource>
 </resource>
