@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
+	<service verb="log" noun="TimeEntry" authenticate="false">
+		<in-parameters>
+			<parameter name="workEffortId"></parameter>
+			<parameter name="username"></parameter>
+			<parameter name="clockDate" type="Timestamp"></parameter>
+			<parameter name="workEffortTypeEnumId" default-value="WetAvailable"></parameter>
+			<parameter name="purposeEnumId" default-value="WepAttendance"></parameter>
+			<parameter name="comments"></parameter>
+			<parameter name="productStoreId" required="true"></parameter>
+			<parameter name="actionType" required="true"></parameter>
+			<parameter name="latitude" required="true"></parameter>
+			<parameter name="longitude" required="true"></parameter>
+		</in-parameters>
+		<out-parameters>
+
+		</out-parameters>
+		<actions>
+			<log level="info" message="username found as ${username}" />
+			<if condition="username">
+				<then>
+					<entity-find-one value-field="userAccount" entity-name="UserAccount">
+						<field-map field-name="username" from="username"/>
+					</entity-find-one>
+					<log level="info" message="found user: ${userAccount}"/>
+					<set field="partyId" from="userAccount.partyId" />
+				</then>
+				<else>
+					<set field="partyId" from="ec.user.userAccount.partyId" />
+				</else>
+			</if>
+			<if condition="!clockDate">
+				<set field="clockDate" type="Timestamp" from="ec.user.nowTimestamp" />
+			</if>
+			<script>
+				import java.util.Calendar;
+				import java.sql.Timestamp; 
+
+				public Timestamp getDayEndStamp(timeStamp,dayAdd){				
+					Calendar tempCal = Calendar.getInstance();
+					tempCal.setTimeInMillis(timeStamp.getTime());
+					tempCal.set(tempCal.get(Calendar.YEAR), tempCal.get(Calendar.MONTH), tempCal.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+					tempCal.set(Calendar.MILLISECOND,999);
+					if(dayAdd){
+						tempCal.add(Calendar.DAY_OF_MONTH,dayAdd);
+					}
+					Timestamp dayEndStamp = new Timestamp(tempCal.getTimeInMillis());
+					return dayEndStamp;
+				}				
+				public Timestamp getDayStartStamp(timeStamp,dayAdd){
+					Calendar tempCal = Calendar.getInstance();
+					tempCal.setTimeInMillis(timeStamp.getTime());
+					tempCal.set(tempCal.get(Calendar.YEAR), tempCal.get(Calendar.MONTH), tempCal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+					tempCal.set(Calendar.MILLISECOND,0);
+					if(dayAdd){
+						tempCal.add(Calendar.DAY_OF_MONTH,-1);
+					}
+					Timestamp dayStartStamp = new Timestamp(tempCal.getTimeInMillis());
+					return dayStartStamp;
+				}
+				previousDayEndStamp = getDayEndStamp(ec.user.nowTimestamp,-1);
+				dueDateStart = getDayStartStamp(clockDate,0);
+				dueDateEnd = getDayEndStamp(clockDate,0);
+			</script>
+			<log level="info" message="clockDate found as ${clockDate}" />
+			<if condition="workEffortId">
+				<then>
+					<entity-find-one value-field="workEffort" entity-name="WorkEffort"></entity-find-one>
+				</then>
+				<else-if condition="clockDate">
+					<entity-find entity-name="WorkEffort" list="workEfforts">
+						<econdition field-name="ownerPartyId" from="partyId" />
+						<date-filter from-field-name="estimatedStartDate" thru-field-name="estimatedCompletionDate" valid-date="clockDate" />
+					</entity-find>
+					<set field="workEffort" type="Object" from="workEfforts[0]" />
+				</else-if>
+			</if>
+			<if condition="!workEffort">
+				<entity-make-value value-field="workEffort" entity-name="WorkEffort" map="context" />
+				<!-- <set field="workEffort.workEffortTypeId" from="workEffortTypeId" /> <set field="workEffort.purposeEnumId" from="purposeEnumId" /> -->
+				<log level="info" message="work effort found as ${workEffort}" />
+				<!-- <set field="workEffort.productStoreId" from="productStoreId" /> -->
+				<service-call name="create#mantle.work.effort.WorkEffort" out-map="workEffort" in-map="true">
+					<field-map field-name="ownerPartyId" from="partyId" />
+					<field-map field-name="estimatedStartDate" from="dueDateStart" />
+					<field-map field-name="estimatedCompletionDate" from="dueDateEnd" />
+				</service-call>
+			</if>
+			<!-- if we find action as clockOut then we have to clock out existing clockin entry.. if not found return error -->
+			<log level="info" message="partyId for time entry: ${partyId}" />
+			<entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
+				<econdition field-name="partyId" from="partyId"/>
+				<econdition field-name="thruDate" operator="is-null" />
+			</entity-find>
+			<log level="info" message="timeEntryList before filter: ${timeEntryList}" />
+			
+			<!-- if we find any open entry - dueDate current Date - action clock out clock out - clock in if no entry found -->
+			<if condition="timeEntryList">
+				<iterate entry="openTimeEntry" list="timeEntryList">
+					<script>
+						<![CDATA[
+							currentDayStart = getDayStartStamp(ec.user.nowTimestamp,0);
+							if(openTimeEntry.fromDate >= currentDayStart){
+								continue;
+							}
+							closeTime = getDayEndStamp(openTimeEntry.fromDate,0);
+							println("start time " + openTimeEntry.fromDate +  " end time: "+closeTime); 
+							timeEntryList.remove(openTimeEntry);
+						]]>			
+					</script>
+					<set field="openTimeEntry.thruDate" from="closeTime" />
+					<log level="info" message="openTimeEntry found as ${openTimeEntry}"/>
+					<service-call name="mantle.work.TimeServices.store#TimeEntry" out-map="storedEntry" >
+						<field-map field-name="partyId" from="partyId" />
+						<field-map field-name="timeEntryId" from="openTimeEntry.timeEntryId" />
+						<field-map field-name="comments" value="auto close time entry"/>
+						<field-map field-name="thruDate" from="dueDateEnd" />
+					</service-call>
+				</iterate>
+			</if>
+			<log level="info" message="timeEntryList after filter: ${timeEntryList}" />
+			<filter-map-list list="timeEntryList" to-list="todayEntryList">
+				<date-filter/>
+			</filter-map-list>
+			<log level="info" message="context found as ${context}" />
+			<set field="todayEntry" from="todayEntryList[0]" />
+			<if condition="actionType=='clockOut' &amp;&amp; todayEntry">
+				<then>
+					<log level="info" message="todayEntry found as ${todayEntry}" />
+					<service-call name="mantle.work.TimeServices.store#TimeEntry" out-map="timeEntry">
+						<field-map field-name="partyId" from="partyId" />
+						<field-map field-name="timeEntryId" from="todayEntry.timeEntryId" />
+						<field-map field-name="thruDate" from="clockDate" />
+						<field-map field-name="clockOutLatitude" from="latitude" />
+						<field-map field-name="clockOutLongitude" from="longitude" />
+					</service-call>
+					<message>Successfully Clocked out!</message>
+				</then>
+				<else-if condition="actionType=='clockIn' &amp;&amp; !todayEntry">
+					<log level="info" message="workEffort found as ${workEffort}" />
+					<service-call name="mantle.work.TimeServices.create#TimeEntryClockIn" in-map="true" out-map="timeEntry">
+						<field-map field-name="workEffortId" from="workEffort.workEffortId" />
+						<field-map field-name="workTypeEnumId" value="WktpLoginLogout" />
+						<field-map field-name="partyId" from="partyId" />
+						<field-map field-name="fromDate" from="clockDate" />
+						<field-map field-name="clockInLatitude" from="latitude" />
+						<field-map field-name="clockInLongitude" from="longitude" />
+					</service-call>
+					<message>Successfully Clocked In!</message>
+				</else-if>
+				<else>
+					<if condition="actionType=='clockOut'">
+						<message error="true"><![CDATA[You should clock in to clockout]]></message>
+						<else>
+							<message error="true"><![CDATA[You cannot clock in twice, clock out for the day first]]></message>
+						</else>
+					</if>
+				</else>
+			</if>
+			<log level="info" message="TimeEntry after Create/Update ${timeEntry}" />
+		</actions>
+	</service>
+</services>

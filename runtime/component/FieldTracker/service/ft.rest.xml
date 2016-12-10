@@ -49,4 +49,11 @@
 			</resource>
 		</resource>
 	</resource>
+	<resource name="attendance" description="ClockIn ClockOut services">
+		<resource name="log">
+			<method type="post">
+				<service name="attendance.AttendanceServices.log#TimeEntry"/>
+			</method>
+		</resource>
+	</resource>
 </resource>

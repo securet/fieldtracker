@@ -25,8 +25,8 @@
 			</field>
 			<field name="userPhoto">
 				<default-field>
-					<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}" url-type="plain" target-window="_blank">
-						<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}"></image>
+					<link link-type="anchor" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}" url-type="plain" target-window="_blank">
+						<image url-type="plain" width="150px" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.userPhoto}"></image>
 					</link>
 				</default-field>
 			</field>
@@ -52,15 +52,15 @@
 			</field>
 			<field name="aadharId">
 				<default-field>
-					<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}" url-type="plain" target-window="_blank">
-						<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}"></image>
+					<link link-type="anchor" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}" url-type="plain" target-window="_blank">
+						<image url-type="plain" width="150px" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.aadharIdPath}"></image>
 					</link>
 				</default-field>
 			</field>
 			<field name="addressId">
 				<default-field>
-					<link link-type="anchor" url="/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}" url-type="plain" target-window="_blank">
-						<image url-type="plain" width="150px" url="/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}"></image>
+					<link link-type="anchor" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}" url-type="plain" target-window="_blank">
+						<image url-type="plain" width="150px" url="${rootUrl?:''}/uploads/uid/${requestJsonParsed.requestInfo.addressIdPath}"></image>
 					</link>
 				</default-field>
 			</field>
@@ -86,7 +86,7 @@
 			</field>
 			<field name="back" hide="hideButtons || statusId.equals('ReqSubmitted')">
 				<default-field title="">
-					<link url="../../Requests" link-type="anchor-button" text="Back"></link>
+					<link url-type="transition" url="../../Requests" link-type="anchor-button" text="Back"></link>
 				</default-field>
 			</field>
 			<field-layout>

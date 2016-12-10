@@ -17,6 +17,7 @@
 	<moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User" />
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Store.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Requests.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
+	<moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTracker/Attendance.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" />
 
 	<!-- <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Admin Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_ADMIN" artifactName="component://FieldTracker/screen/Admin/Admin.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" /> <moqui.security.UserGroup userGroupId="FIELD_TRACKER_ADMIN" description="Field Tracker Administrators" /> <moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_ADMIN" artifactGroupId="FIELD_TRACKER_ADMIN" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" /> <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker 
 		Manager Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_MANAGER" artifactName="component://FieldTracker/screen/Manager/Manager.xml" artifactTypeEnumId="AT_XML_SCREEN" inheritAuthz="Y" /> <moqui.security.UserGroup userGroupId="FIELD_TRACKER_MANAGER" description="Field Tracker Managers" /> <moqui.security.ArtifactAuthz artifactAuthzId="FIELD_TRACKER_ADM_FTAD" userGroupId="FIELD_TRACKER_MANAGER" artifactGroupId="FIELD_TRACKER_MANAGER" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL" /> <moqui.security.ArtifactGroup artifactGroupId="FIELD_TRACKER_USER" description="Field Tracker User Screens" /> <moqui.security.ArtifactGroupMember artifactGroupId="FIELD_TRACKER_USER" artifactName="component://FieldTracker/screen/FieldTrackerUser.xml" 
@@ -66,5 +67,10 @@
 	<moqui.basic.email.EmailTemplate emailTemplateId="PROMOTER_REQREJECTED" description="Promoter Request Rejected" emailServerId="ALLSMART" bodyScreenLocation="component://FieldTracker/screen/templates/RequestSubmittedNotification.xml" webappName="webroot" fromAddress="test@securet.in" ccAddresses="" bccAddresses="" subject="Request Submitted ${requestId}" sendPartial="Y" />
 	<moqui.basic.email.EmailTemplate emailTemplateId="PROMOTER_REQCOMPLETED" description="Promoter Request Completed" emailServerId="ALLSMART" bodyScreenLocation="component://FieldTracker/screen/templates/RequestSubmittedNotification.xml" webappName="webroot" fromAddress="test@securet.in" ccAddresses="" bccAddresses="" subject="Request Submitted ${requestId}" sendPartial="Y" />
 	<!-- Mail templates -->
+	
+	
+	<moqui.basic.Enumeration description="Attendance" enumId="WepAttendance" enumTypeId="WorkEffortType"/>
+    <moqui.basic.Enumeration description="LogIn-LogOut" enumId="WktpLoginLogout" enumTypeId="WorkType"/>
+	
 
 </entity-facade-xml>

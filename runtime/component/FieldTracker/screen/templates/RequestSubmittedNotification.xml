@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-include="false">
 	<actions>
+        <set field="rootUrl" from="org.moqui.impl.context.WebFacadeImpl.getWebappRootUrl('webroot', null, true, false, ec)"/>
 		<script>
 				import groovy.json.JsonSlurper;
 				JsonSlurper jsonSlurper = new JsonSlurper();

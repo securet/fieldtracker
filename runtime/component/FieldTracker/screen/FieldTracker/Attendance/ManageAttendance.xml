@@ -1,0 +1,130 @@
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd">
+	<parameter name="partyId" />
+	<transition name="clockInTimeEntry">
+		<service-call name="attendance.AttendanceServices.log#TimeEntry"></service-call>
+		<default-response url="."></default-response>
+	</transition>
+	
+	<actions>
+		<entity-find entity-name="mantle.work.effort.WorkEffortAndParty" list="myTaskList">
+			<search-form-inputs default-order-by="priority" />
+			<date-filter />
+			<econdition field-name="workEffortTypeEnumId" value="Available" />
+			<econdition field-name="purposeEnumId" value="Attendance" />
+			<econdition field-name="partyId" />
+			<select-field field-name="workEffortId" />
+			<select-field field-name="workEffortName" />
+			<select-field field-name="priority" />
+			<select-field field-name="purposeEnumId" />
+			<select-field field-name="statusId" />
+			<select-field field-name="estimatedCompletionDate" />
+			<select-field field-name="estimatedStartDate" />
+		</entity-find>
+	</actions>
+
+	<widgets>
+		<container-panel id="UserInfoContainer" dynamic="true">
+			<panel-center>
+				<field name="Attendance">
+					<default-field>
+						<link url="../Attendance/ManageAttendance" text="Attendance"></link>
+					</default-field>
+				</field>
+				<form-single name="ClockInForm" transition="clockInTimeEntry">
+					<field name="username">
+						<default-field>
+							<drop-down size="2" search="true">
+								<entity-options key="${username}" text="${firstName}"> 
+									<entity-find entity-name="PersonAndUserAccountWithRole" limit="100">
+										<econditions combine="or">
+											<econdition field-name="roleTypeId" value="FieldExecutiveOnPremise"/>
+											<econdition field-name="roleTypeId" value="FieldExecutiveOffPremise"/>
+										</econditions>
+									</entity-find>
+								</entity-options>
+							</drop-down>
+						</default-field>
+					</field>
+					<field name="workTypeEnumId">
+						<default-field title="Work Type">
+							<text-line default-value="WetAvailable"></text-line>
+						</default-field>
+					</field>
+					<field name="purposeEnumId">
+						<default-field title="Purpose Type">
+							<text-line default-value="WepAttendance"></text-line>
+						</default-field>
+					</field>
+					<field name="comments">
+						<default-field>
+							<text-area cols="60" rows="3" />
+						</default-field>
+					</field>
+					<field name="clockDate" from="ec.user.nowTimestamp">
+						<default-field title="clockDate">
+							<date-time />
+						</default-field>
+					</field>
+					<field name="productStoreId">
+						<default-field title="ProductStore">
+							<text-line default-value="100051"></text-line>
+						</default-field>
+					</field>
+					<field name="actionType">
+						<default-field title="action">
+							<text-line default-value="clockIn"></text-line>
+						</default-field>
+					</field>
+					<field name="latitude">
+						<default-field title="latitude">
+							<text-line default-value="10"></text-line>
+						</default-field>
+					</field>
+					<field name="longitude">
+						<default-field title="longitude">
+							<text-line default-value="10"></text-line>
+						</default-field>
+					</field>
+					<field name="submitButton">
+						<default-field title="Clock In">
+							<submit />
+						</default-field>
+					</field>
+				</form-single>
+
+				<form-list name="MyTasks" list="myTaskList" skip-form="true" list-entry="myAttendance">
+					<row-actions>
+						<entity-find-one entity-name="Person" value-field="person" />
+					</row-actions>
+					<field name="workEffortId">
+						<default-field title="AttendanceId">
+							<display text="${workEffortId}"></display>
+						</default-field>
+					</field>
+					<field name="partyId">
+						<default-field title="User">
+							<link url="../../User/EditUser" text="${person.firstName} ${person.lastName}"></link>
+						</default-field>
+					</field>
+					<field name="purposeEnumId">
+						<default-field title="Purpose">
+							<display-entity entity-name="moqui.basic.Enumeration" also-hidden="false" />
+						</default-field>
+					</field>
+					<field name="actualStartDate">
+						<default-field title="Date">
+							<display format="yyyy-MM-dd" />
+						</default-field>
+					</field>
+					<field name="details">
+						<default-field title="Timeline">
+							<link url="timeEntry" text="${person.firstName} ${person.lastName}">
+								<parameter name="workEffortId" />
+							</link>
+						</default-field>
+					</field>
+				</form-list>
+			</panel-center>
+		</container-panel>
+	</widgets>
+</screen>

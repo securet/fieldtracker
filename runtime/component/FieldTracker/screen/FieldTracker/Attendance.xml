@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Attendance - Caution for testing only" default-menu-index="4" default-menu-include="true">
+	<subscreens default-item="ManageAttendance" always-use-full-path="true">
+		<subscreens-item name="ManageAttendance" location="component://FieldTracker/screen/FieldTracker/Attendance/ManageAttendance.xml" menu-include="true" />
+	</subscreens>
+	<widgets>
+		<subscreens-panel id="attendance-panel" type="tab" />
+	</widgets>
+</screen>
