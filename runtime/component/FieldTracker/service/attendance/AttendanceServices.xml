@@ -213,6 +213,7 @@
 					<select-field field-name="clockInLongitude"/>
 					<select-field field-name="clockOutLatitude"/>
 					<select-field field-name="clockOutLongitude"/>
+					<select-field field-name="lastUpdatedStamp"/>
 					<order-by field-name="fromDate" />
 					<order-by field-name="lastUpdatedStamp" />
 				</entity-find>

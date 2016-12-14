@@ -118,14 +118,14 @@
 		<member-entity entity-alias="TE" entity-name="TimeEntry"></member-entity>
 		<alias name="workEffortId"  entity-alias="TE"></alias>
 		<alias name="timeEntryId" entity-alias="TE"></alias>
-		<alias name="fromDate" entity-alias="TE"></alias>
-		<alias name="thruDate" entity-alias="TE"></alias>
-		<alias name="hours" entity-alias="TE"></alias>
+		<alias name="fromDate" type="date-time" entity-alias="TE"></alias>
+		<alias name="thruDate" type="date-time" entity-alias="TE"></alias>
+		<alias name="hours" type="number-decimal" entity-alias="TE"></alias>
 		<alias name="comments" entity-alias="TE"></alias>
-		<alias name="clockInLatitude" entity-alias="TE"></alias>
-		<alias name="clockInLongitude" entity-alias="TE"></alias>
-		<alias name="clockOutLatitude" entity-alias="TE"></alias>
-		<alias name="clockOutLongitude" entity-alias="TE"></alias>
-		<alias name="lastUpdatedStamp" entity-alias="TE"></alias>
+		<alias name="clockInLatitude" type="number-decimal" entity-alias="TE"></alias>
+		<alias name="clockInLongitude" type="number-decimal" entity-alias="TE"></alias>
+		<alias name="clockOutLatitude" type="number-decimal" entity-alias="TE"></alias>
+		<alias name="clockOutLongitude" type="number-decimal" entity-alias="TE"></alias>
+		<alias name="lastUpdatedStamp" type="date-time" entity-alias="TE"></alias>
 	</view-entity>
 </entities>
