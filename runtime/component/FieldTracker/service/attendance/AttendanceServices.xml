@@ -21,9 +21,9 @@
 			<if condition="username">
 				<then>
 					<entity-find-one value-field="userAccount" entity-name="UserAccount">
-						<field-map field-name="username" from="username"/>
+						<field-map field-name="username" from="username" />
 					</entity-find-one>
-					<log level="info" message="found user: ${userAccount}"/>
+					<log level="info" message="found user: ${userAccount}" />
 					<set field="partyId" from="userAccount.partyId" />
 				</then>
 				<else>
@@ -90,11 +90,11 @@
 			<!-- if we find action as clockOut then we have to clock out existing clockin entry.. if not found return error -->
 			<log level="info" message="partyId for time entry: ${partyId}" />
 			<entity-find entity-name="mantle.work.time.TimeEntry" list="timeEntryList">
-				<econdition field-name="partyId" from="partyId"/>
+				<econdition field-name="partyId" from="partyId" />
 				<econdition field-name="thruDate" operator="is-null" />
 			</entity-find>
 			<log level="info" message="timeEntryList before filter: ${timeEntryList}" />
-			
+
 			<!-- if we find any open entry - dueDate current Date - action clock out clock out - clock in if no entry found -->
 			<if condition="timeEntryList">
 				<iterate entry="openTimeEntry" list="timeEntryList">
@@ -110,20 +110,20 @@
 						]]>			
 					</script>
 					<set field="openTimeEntry.thruDate" from="closeTime" />
-					<log level="info" message="openTimeEntry found as ${openTimeEntry}"/>
-					<service-call name="mantle.work.TimeServices.store#TimeEntry" out-map="storedEntry" >
+					<log level="info" message="openTimeEntry found as ${openTimeEntry}" />
+					<service-call name="mantle.work.TimeServices.store#TimeEntry" out-map="storedEntry">
 						<field-map field-name="partyId" from="partyId" />
 						<field-map field-name="timeEntryId" from="openTimeEntry.timeEntryId" />
-						<field-map field-name="comments" value="auto close time entry"/>
+						<field-map field-name="comments" value="auto close time entry" />
 						<field-map field-name="thruDate" from="dueDateEnd" />
 					</service-call>
 				</iterate>
 			</if>
 			<log level="info" message="timeEntryList after filter: ${timeEntryList}" />
 			<filter-map-list list="timeEntryList" to-list="todayEntryList">
-				<date-filter/>
+				<date-filter />
 			</filter-map-list>
-			<log level="info" message="context found as ${context}" />
+			<log level="info" message="todayEntryList found as ${todayEntryList}" />
 			<set field="todayEntry" from="todayEntryList[0]" />
 			<if condition="actionType=='clockOut' &amp;&amp; todayEntry">
 				<then>
@@ -159,6 +159,68 @@
 				</else>
 			</if>
 			<log level="info" message="TimeEntry after Create/Update ${timeEntry}" />
+		</actions>
+	</service>
+	<service verb="getLog" noun="TimeEntry" authenticate="false">
+		<in-parameters>
+			<parameter name="username"></parameter>
+			<parameter name="pageIndex" type="Integer"/>
+			<parameter name="pageSize" type="Integer"/>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="userTimeLog"  type="list"></parameter>
+		</out-parameters>
+		<actions>
+			<log level="info" message="username found as ${username}" />
+			<if condition="username">
+				<then>
+					<entity-find-one value-field="userAccount" entity-name="UserAccount">
+						<field-map field-name="username" from="username" />
+					</entity-find-one>
+					<set field="partyId" from="userAccount.partyId" />
+				</then>
+				<else>
+					<set field="partyId" from="ec.user.userAccount.partyId" />
+				</else>
+			</if>
+			<entity-find entity-name="mantle.work.effort.WorkEffort"  list="userWorkEffortList" limit="pageSize" offset="pageIndex">
+				<econdition field-name="ownerPartyId" from="partyId" />
+				<select-field field-name="workEffortId"/>
+				<select-field field-name="estimatedStartDate"/>
+				<select-field field-name="estimatedCompletionDate"/>
+			</entity-find>
+			<script>
+				userTimeLog = [];
+			</script> 
+			<iterate entry="userWorkEffort" list="userWorkEffortList">
+				<script>
+					userWorkEffortMap = [:];
+					userWorkEffortEV = [:];
+					userWorkEffortEV.workEffortId = userWorkEffort.workEffortId;
+					userWorkEffortEV.estimatedStartDate = userWorkEffort.estimatedStartDate;
+					userWorkEffortEV.estimatedCompletionDate = userWorkEffort.estimatedCompletionDate;
+					userWorkEffortMap.putAll(userWorkEffortEV);
+				</script>
+				<entity-find entity-name="com.ft.attendance.FTTimeEntry" list="timeEntryList">
+					<econdition field-name="workEffortId" from="userWorkEffort.workEffortId"/>
+					<select-field field-name="workEffortId"/>
+					<select-field field-name="timeEntryId"/>
+					<select-field field-name="fromDate"/>
+					<select-field field-name="thruDate"/>
+					<select-field field-name="hours"/>
+					<select-field field-name="comments"/>
+					<select-field field-name="clockInLatitude"/>
+					<select-field field-name="clockInLongitude"/>
+					<select-field field-name="clockOutLatitude"/>
+					<select-field field-name="clockOutLongitude"/>
+					<order-by field-name="fromDate" />
+					<order-by field-name="lastUpdatedStamp" />
+				</entity-find>
+				<script>
+					userWorkEffortMap.timeEntryList=timeEntryList;
+					userTimeLog.add(userWorkEffortMap);
+				</script>
+			</iterate>
 		</actions>
 	</service>
 </services>

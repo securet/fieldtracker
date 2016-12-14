@@ -19,7 +19,7 @@
 			<parameter name="userStores" type="list"></parameter>
 		</out-parameters>
 		<actions>
-			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores">
+			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores"  >
 				<econdition value="${ec.getUser().getUserAccount().username}" field-name="username" />
 			</entity-find>
 		</actions>
@@ -30,7 +30,6 @@
 			<parameter name="roleTypeId"></parameter>
 		</in-parameters>
 		<out-parameters>
-			<parameter name=""></parameter>
 		</out-parameters>
 		<actions>
 			

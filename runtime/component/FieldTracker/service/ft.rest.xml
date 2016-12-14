@@ -51,6 +51,9 @@
 	</resource>
 	<resource name="attendance" description="ClockIn ClockOut services">
 		<resource name="log">
+			<method type="get">
+				<service name="attendance.AttendanceServices.getLog#TimeEntry"/>
+			</method>
 			<method type="post">
 				<service name="attendance.AttendanceServices.log#TimeEntry"/>
 			</method>
