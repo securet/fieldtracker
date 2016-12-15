@@ -10,7 +10,7 @@
 			<parameter name="comments"></parameter>
 			<parameter name="productStoreId" required="true"></parameter>
 			<parameter name="actionType" required="true"></parameter>
-			<parameter name="actionImage" required="true"></parameter>
+			<parameter name="actionImage" required="false"></parameter>
 			<parameter name="latitude" required="true"></parameter>
 			<parameter name="longitude" required="true"></parameter>
 		</in-parameters>
