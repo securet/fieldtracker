@@ -54,6 +54,8 @@
 		<field name="clockInLongitude" type="number-decimal" enable-audit-log="true" />
 		<field name="clockOutLatitude" type="number-decimal" enable-audit-log="true" />
 		<field name="clockOutLongitude" type="number-decimal" enable-audit-log="true" />
+		<field name="clockInPath" type="text-long"></field>
+		<field name="clockOutPath" type="text-long"></field>
 	</extend-entity>
 
 	<view-entity package="mantle.product.store" entity-name="ProductStoreRoleWithUser">
@@ -122,6 +124,8 @@
 		<alias name="thruDate" type="date-time" entity-alias="TE"></alias>
 		<alias name="hours" type="number-decimal" entity-alias="TE"></alias>
 		<alias name="comments" entity-alias="TE"></alias>
+		<alias name="clockInPath" type="text-long" entity-alias="TE"></alias>
+		<alias name="clockOutPath" type="text-long" entity-alias="TE"></alias>
 		<alias name="clockInLatitude" type="number-decimal" entity-alias="TE"></alias>
 		<alias name="clockInLongitude" type="number-decimal" entity-alias="TE"></alias>
 		<alias name="clockOutLatitude" type="number-decimal" entity-alias="TE"></alias>
