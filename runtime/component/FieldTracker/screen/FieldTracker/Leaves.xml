@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd"
+        default-menu-title="Leaves" default-menu-index="4" menu-image="/hmstatic/images/user-man27.png">
+
+	<subscreens default-item="FindLeaves" always-use-full-path="true">
+        <subscreens-item name="FindLeaves" location="component://FieldTracker/screen/FieldTracker/Leaves/FindLeaves.xml"
+                menu-include="true"/>
+        <subscreens-item name="EditLeaves" location="component://FieldTracker/screen/FieldTracker/Leaves/EditLeaves.xml"
+                menu-index="1" menu-title="Leaves" menu-include="false"/>
+	</subscreens>
+
+    <widgets>
+        <subscreens-panel id="leaves-panel" type="tab"/>
+    </widgets>
+</screen>

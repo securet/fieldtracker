@@ -118,6 +118,15 @@
 							<text-line />
 						</default-field>
 					</field>
+					<field name="organizationId">
+						<default-field title="Organization">
+							<drop-down>
+								<entity-options key="${partyId}" text="${organizationName}">
+									<entity-find entity-name="mantle.party.Organization"></entity-find>
+								</entity-options>
+							</drop-down>
+						</default-field>
+					</field>
 					<field name="contactNumber">
 						<default-field title="Mobile">
 							<text-line />

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
 	<service verb="create" noun="Store">
-		<description>Create Store</description>
+		<description>Create Store and Add Current User Role</description>
 		<in-parameters>
 			<parameter name="storeName" required="true" />
 			<parameter name="address" required="true" />
@@ -9,7 +9,21 @@
 			<parameter name="longitude" required="true" format="#0.00" />
 			<parameter name="proximityRadius" required="true" format="#0.00" />
 		</in-parameters>
+		<out-parameters>
+			<parameter name="productStore"></parameter>
+		</out-parameters>
 		<actions>
+			<service-call name="create#mantle.product.store.ProductStore" in-map="context" out-map="productStore">
+			</service-call>
+			<entity-find entity-name="mantle.party.PartyRole" limit="1" list="partyRole">
+				<econdition field-name="partyId" from="ec.getUser().getUserAccount().partyId"/>
+			</entity-find>
+			<service-call name="create#mantle.product.store.ProductStoreRole" in-map="context" >
+				<field-map field-name="partyId" from="ec.getUser().getUserAccount().partyId"/>
+				<field-map field-name="roleTypeId" from="partyRole[0].roleTypeId"/>
+				<field-map field-name="productStoreId" from="productStore.productStoreId"/>
+			</service-call>
+			<log/>
 		</actions>
 	</service>
 	<service verb="userStores" noun="Store">

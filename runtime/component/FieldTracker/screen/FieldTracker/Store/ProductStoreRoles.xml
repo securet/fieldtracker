@@ -10,10 +10,13 @@
 					<row-actions>
 						<!-- <entity-find-related-one relationship-name="ProductStore" to-value-field="productStore" value-field="productStoreRole"/> <entity-find-related-one relationship-name="Party" to-value-field="party" value-field="productStoreRole"/> <entity-find-one entity-name="RoleType" value-field="roleType"> <field-map field-name="roleTypeId" from="productStoreRole.roleTypeId"/> </entity-find-one> -->
 						<entity-find-one value-field="person" entity-name="Person"></entity-find-one>
+						<entity-find-one value-field="productStore" entity-name="ProductStore"></entity-find-one>
 					</row-actions>
 					<field name="productStoreId">
 						<default-field title="Product Store">
-							<display-entity entity-name="ProductStore" text="${storeName}" />
+							<link url="/apps/${appRoot}/Store/EditStore" url-type="plain" text="${productStore.storeName}">
+								<parameter name="productStoreId"/>
+							</link>
 						</default-field>
 					</field>
 					<field name="partyId">

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-include="false">
+	<!-- set userGroupId so that when an Account is created it will be added to that group -->
+	<always-actions>
+		<set field="userGroupId" from="FIELD_TRACKER_USER" />
+	</always-actions>
+
+	<transition name="findLeaves">
+		<default-response url="." />
+	</transition>
+	<transition name="applyLeave">
+		<actions>
+			<service-call name="party.LeaveServices.create#EmploymentLeave" in-map="context" out-map="context" />
+		</actions>
+		<default-response url="../FindLeaves" />
+		<error-response url="." />
+	</transition>
+	<transition name="editLeave">
+		<default-response url="../EditLeaves" />
+	</transition>
+
+	<pre-actions>
+		<set field="html_title" value="Find Leaves" />
+	</pre-actions>
+
+	<actions>
+		<service-call name="party.LeaveServices.leavesToApprove#EmploymentLeave" out-map="context"></service-call>
+		<entity-find-one value-field="person" entity-name="mantle.party.Person">
+			<field-map field-name="partyId" from="ec.getUser().getUserAccount().partyId" />
+		</entity-find-one>
+		<set field="buttonName" value="Apply"/>
+	</actions>
+	<widgets>
+		<container>
+			<container-dialog id="FindUserDialog" button-text="Apply Leave" width="700">
+				<form-single name="EditUser" transition="applyLeave" map="userLeave" extends="component://FieldTracker/screen/FieldTracker/Leaves/LeaveForm.xml#EditUser">
+					<field name="fromDate">
+						<default-field>
+							<date-time format="yyyy-MM-dd" />
+						</default-field>
+					</field>
+					<field name="organizationId">
+						<default-field>
+							<drop-down>
+								<entity-options key="${partyId}" text="${organizationName}">
+									<entity-find entity-name="PartyRelationshipAndOrganization">
+										<econdition field-name="toPartyId" from="ec.getUser().getUserAccount().partyId"/>
+									</entity-find>
+								</entity-options>
+							</drop-down>
+						</default-field>
+					</field>
+					<field-layout>
+						<field-ref name="appliedBy"/>
+						<field-ref name="organizationId"/>
+						<field-ref name="fromDate"/>
+						<field-ref name="thruDate"/>
+						<field-ref name="leaveTypeEnumId"/>
+						<field-ref name="leaveReasonEnumId"/>
+						<field-ref name="description"/>
+						<field-ref name="approverPartyId"/>
+						<field-ref name="submitButton"/>
+					</field-layout>
+				</form-single>
+			</container-dialog>
+			<container-box>
+				<box-header>
+					<label text="Leave Approvals" type="h5"/>
+				</box-header>
+				<box-body>
+					<form-list name="EmployeeLeave" list="employeeLeavesList" list-entry="employeeLeave">
+						<row-actions>
+							<entity-find-one value-field="person" entity-name="mantle.party.Person">
+								<field-map field-name="partyId" from="employeeLeave.toPartyId"/>
+							</entity-find-one>
+							<entity-find-one value-field="approverPerson" entity-name="mantle.party.Person">
+								<field-map field-name="partyId" from="employeeLeave.approverPartyId"/>
+							</entity-find-one>
+						</row-actions>
+						<field name="appliedBy">
+							<header-field show-order-by="case-insensitive" />
+							<default-field>
+								<link url="/ft/User/EditUser" url-type="plain" text="${person.firstName?:'--'} ${person.lastName?:'--'}" link-type="anchor" >
+									<parameter name="partyId" from="employeeLeave.toPartyId"/>
+								</link>
+							</default-field>
+						</field>
+						<field name="fromDate">
+							<default-field>
+								<display format="yyyy-MM-dd"></display>
+							</default-field>
+						</field>
+						<field name="thruDate">
+							<default-field>
+								<display format="yyyy-MM-dd"></display>
+							</default-field>
+						</field>
+						<field name="leaveTypeEnumId">
+							<default-field title="Leave Type">
+								<display-entity entity-name="Enumeration"/>
+							</default-field>
+						</field>
+						<field name="leaveReasonEnumId">
+							<default-field title="Leave Reason">
+								<display-entity entity-name="Enumeration"/>
+							</default-field>
+						</field>
+						<field name="leaveApproved">
+							<default-field>
+								<display></display>
+							</default-field>
+						</field>
+						<field name="approvedByPartyId">
+							<default-field title="Approved By">
+								<link url="/ft/User/EditUser" url-type="plain" text="${approverPerson?.firstName?:'--'} ${approverPerson?.lastName?:'--'}" link-type="anchor" >
+									<parameter name="partyId" from="employeeLeave.approverPartyId"/>
+								</link>
+							</default-field>
+						</field>
+						<field name="description">
+							<default-field>
+								<display />
+							</default-field>
+						</field>
+						<field name="submit">
+							<default-field>
+								<link url="editLeave" text="Edit"></link>
+							</default-field>
+						</field>
+					</form-list>
+				</box-body>
+			</container-box>
+		</container>
+	</widgets>
+</screen>

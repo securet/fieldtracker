@@ -6,12 +6,12 @@
 
 	<resource name="user">
 		<method type="get">
-			<service name="party.PartyServices.getUserInfo#Party"/>
+			<service name="party.PartyServices.getUserInfo#Party" />
 		</method>
 	</resource>
 	<resource name="stores" description="Lookup for stores">
 		<method type="post">
-			<entity name="ProductStore" masterName="default" operation="create" />
+			<service name="store.StoreServices.create#Store" />
 		</method>
 		<id name="productStoreId">
 			<method type="get">
@@ -52,10 +52,35 @@
 	<resource name="attendance" description="ClockIn ClockOut services">
 		<resource name="log">
 			<method type="get">
-				<service name="attendance.AttendanceServices.getLog#TimeEntry"/>
+				<service name="attendance.AttendanceServices.getLog#TimeEntry" />
 			</method>
 			<method type="post">
-				<service name="attendance.AttendanceServices.log#TimeEntry"/>
+				<service name="attendance.AttendanceServices.log#TimeEntry" />
+			</method>
+		</resource>
+	</resource>
+	<resource name="leaves" description="Leave Management services">
+		<method type="post">
+			<service name="party.LeaveServices.create#EmploymentLeave" />
+		</method>
+		<method type="put">
+			<service name="party.LeaveServices.update#EmploymentLeave" />
+		</method>
+		<resource name="types">
+			<method type="get">
+				<service name="party.LeaveServices.leaveTypes#EmploymentLeave"/>
+			</method>
+		</resource>
+		<resource name="my">
+			<resource name="list">
+				<method type="get">
+					<service name="party.LeaveServices.userLeaves#EmploymentLeave" />
+				</method>
+			</resource>
+		</resource>
+		<resource name="requisitions">
+			<method type="get">
+				<service name="party.LeaveServices.leavesToApprove#EmploymentLeave" />
 			</method>
 		</resource>
 	</resource>

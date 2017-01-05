@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This software is in the public domain under CC0 1.0 Universal plus a Grant of Patent License. To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty. You should have received a copy of the CC0 Public Domain Dedication along with this software (see the LICENSE.md file). If not, see <http://creativecommons.org/publicdomain/zero/1.0/>. -->
 <entity-facade-xml type="seed">
 	<!-- Base Screen -->
 	<moqui.screen.SubscreensItem screenLocation="component://webroot/screen/webroot/apps.xml" subscreenName="ft" subscreenLocation="component://FieldTracker/screen/FieldTracker.xml" menuTitle="Field Tracker" menuIndex="8" menuInclude="Y" />
@@ -26,16 +25,16 @@
 	<mantle.party.RoleType description="HR Executive" roleTypeId="HumanResourcesExecutive" />
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="HumanResourcesExecutive" />
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="HumanResourcesManager" />
-	<mantle.party.RoleType description="Field Executive On Premise" roleTypeId="FieldExecutiveOnPremise" />
-	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOnPremise" />
-	<mantle.party.RoleType description="Field Executive Off Premise" roleTypeId="FieldExecutiveOffPremise" />
-	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOffPremise" />
-	<mantle.party.RoleType description="Sales Executive" roleTypeId="SalesExecutive" />
-	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SalesExecutive" />
-	<mantle.party.RoleType description="Asst Sales Manager" roleTypeId="AsstSalesManager" />
-	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="AsstSalesManager" />
 	<mantle.party.RoleType description="Senior Sales Manager" roleTypeId="SeniorSalesManager" />
 	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SeniorSalesManager" />
+	<mantle.party.RoleType description="Asst Sales Manager" parentTypeId="SeniorSalesManager" roleTypeId="AsstSalesManager" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="AsstSalesManager" />
+	<mantle.party.RoleType description="Sales Executive" parentTypeId="AsstSalesManager" roleTypeId="SalesExecutive" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="SalesExecutive" />
+	<mantle.party.RoleType description="Field Executive On Premise" parentTypeId="SalesExecutive" roleTypeId="FieldExecutiveOnPremise" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOnPremise" />
+	<mantle.party.RoleType description="Field Executive Off Premise" parentTypeId="SalesExecutive" roleTypeId="FieldExecutiveOffPremise" />
+	<mantle.party.RoleGroupMember roleGroupEnumId="RgpFieldTracker" roleTypeId="FieldExecutiveOffPremise" />
 
 	<moqui.basic.Enumeration enumId="RqtAddPromoter" description="Add Promoter" enumTypeId="RequestType" />
 	<moqui.basic.Enumeration enumId="RqtLeave" description="Leave" enumTypeId="RequestType" />
@@ -73,4 +72,8 @@
     <moqui.basic.Enumeration description="LogIn-LogOut" enumId="WktpLoginLogout" enumTypeId="WorkType"/>
 	
 
+    <mantle.party.Party partyId="ORG_OPPO" partyTypeEnumId="PtyOrganization"/>
+    <mantle.party.Organization partyId="ORG_OPPO" organizationName="OPPO"/>
+    <mantle.party.PartyRole partyId="ORG_OPPO" roleTypeId="OrgInternal"/>
+    
 </entity-facade-xml>

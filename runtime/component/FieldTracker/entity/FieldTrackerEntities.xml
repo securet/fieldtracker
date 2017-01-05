@@ -132,4 +132,32 @@
 		<alias name="clockOutLongitude" type="number-decimal" entity-alias="TE"></alias>
 		<alias name="lastUpdatedStamp" type="date-time" entity-alias="TE"></alias>
 	</view-entity>
+	<view-entity package="com.ft.party.leaves" entity-name="EmployeeLeavesByParty">
+		<member-entity entity-alias="EL" entity-name="mantle.humanres.employment.EmploymentLeave"></member-entity>
+		<member-entity entity-alias="PR" entity-name="mantle.party.PartyRelationship" join-from-alias="EL">
+			<key-map field-name="partyRelationshipId"/>
+		</member-entity>
+		<member-entity entity-alias="TPR" entity-name="mantle.party.Person" join-from-alias="PR">
+			<key-map field-name="toPartyId" related="partyId"/>
+		</member-entity>
+		<member-entity entity-alias="APR" entity-name="mantle.party.Person" join-from-alias="EL" join-optional="true">
+			<key-map field-name="approverPartyId" related="partyId"/>
+		</member-entity>
+		<alias-all entity-alias="EL"></alias-all>
+		<alias-all entity-alias="PR">
+			<exclude field="lastUpdatedStamp"/>
+		</alias-all>
+		<alias name="firstName" entity-alias="TPR"></alias>
+		<alias name="lastName" entity-alias="TPR"></alias>
+		<alias name="approverFirstName" field="firstName" entity-alias="APR"></alias>
+		<alias name="approverLastName" field="lastName" entity-alias="APR"></alias>
+	</view-entity>
+	<view-entity package="com.ft.party" entity-name="PartyRelationshipAndOrganization">
+		<member-entity entity-alias="PR" entity-name="mantle.party.PartyRelationship" />
+		<member-entity entity-alias="ORG" entity-name="mantle.party.Organization" join-from-alias="PR">
+			<key-map field-name="fromPartyId" related="partyId"/>
+		</member-entity>
+		<alias-all entity-alias="PR"></alias-all>
+		<alias-all entity-alias="ORG"></alias-all>
+	</view-entity>
 </entities>

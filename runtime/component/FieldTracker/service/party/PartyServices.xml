@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
-    <service verb="create" noun="Account" authenticate="false">
+    <service verb="create" noun="Account">
         <description>
             Create a basic user account including:
             - Party/Person
@@ -36,6 +36,7 @@
 
             <parameter name="userGroupId"/>
             <parameter name="roleTypeId"/>
+            <parameter name="organizationId"/>
             <parameter name="loginAfterCreate" type="Boolean" default="true"/>
         </in-parameters>
         <out-parameters>
@@ -89,9 +90,12 @@
                             in-map="[userGroupId:userGroupId, userId:userId, fromDate:ec.user.nowTimestamp]"/>
                 </if>
                 <!-- login the user -->
-                <if condition="loginAfterCreate &amp;&amp; newPassword">
-                    <script>ec.user.loginUser(username, newPassword)</script></if>
+                <!-- <if condition="loginAfterCreate &amp;&amp; newPassword">
+                    <script>ec.user.loginUser(username, newPassword)</script></if> -->
             </if>
+            <!-- also create employment and relationship -->
+			<service-call name="create#mantle.party.PartyRelationship" in-map="[relationshipTypeEnumId:'PrtMember', fromPartyId:organizationId, fromRoleTypeId:'OrgInternal',toPartyId:newPartyOut.partyId, toRoleTypeId:'Employee', fromDate:ec.user.nowTimestamp]" out-map="partyRelationship" />
+			<service-call name="create#mantle.humanres.employment.Employment" />
         </actions>
     </service>
 	<service verb="updateAccountWithSingleRole" noun="Account">

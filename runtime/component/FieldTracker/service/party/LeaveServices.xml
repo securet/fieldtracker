@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
+	<service verb="create" noun="EmploymentLeave">
+		<in-parameters>
+			<parameter name="leaveTypeEnumId" required="true"></parameter>
+			<parameter name="leaveReasonEnumId" required="true"></parameter>
+			<parameter name="description" required="true"></parameter>
+			<parameter name="fromDate" required="true" type="Date"></parameter>
+			<parameter name="thruDate" required="true" type="Date"></parameter>
+			<parameter name="organizationId" required="true"></parameter>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="employeeLeave"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="userAccount" from="ec.getUser().getUserAccount()" />
+			<entity-find entity-name="mantle.party.PartyRelationship" limit="1" list="partyRelationships">
+				<econdition field-name="fromPartyId" from="organizationId" />
+				<econdition field-name="toPartyId" from="userAccount.partyId" />
+			</entity-find>
+			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="userLeave">
+				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
+				<field-map field-name="fromDate" />
+			</entity-find-one>
+			<log level="info" message="userLeave ${userLeave}" />
+			<if condition="userLeave">
+				<message error="true">You have already applied a leave starting with date: ${fromDate}</message>
+			</if>
+			<service-call name="create#mantle.humanres.employment.EmploymentLeave">
+				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
+				<field-map field-name="fromDate" from="fromDate" />
+				<field-map field-name="thruDate" from="thruDate" />
+				<field-map field-name="leaveTypeEnumId" from="leaveTypeEnumId" />
+				<field-map field-name="leaveReasonEnumId" from="leaveReasonEnumId" />
+				<field-map field-name="description" from="description" />
+			</service-call>
+			<log level="info" message="partyRelationships[0].partyRelationshipId: ${partyRelationships[0].partyRelationshipId}"/>
+			<log level="info" message="fromDate ${fromDate}"/>
+			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="employeeLeave" cache="false">
+				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
+				<field-map field-name="fromDate" />
+			</entity-find-one>
+		</actions>
+	</service>
+	<service verb="userLeaves" noun="EmploymentLeave">
+		<in-parameters>
+			<parameter name="pageIndex" type="Integer" />
+			<parameter name="pageSize" type="Integer" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="totalEntries"></parameter>
+			<parameter name="employeeLeavesList"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="userAccount" from="ec.getUser().getUserAccount()" />
+			<entity-find-count count-field="totalEntries" entity-name="com.ft.party.leaves.EmployeeLeavesByParty">
+				<econdition field-name="toPartyId" from="userAccount.partyId" />
+			</entity-find-count>
+			<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="pageIndex">
+				<econdition field-name="toPartyId" from="userAccount.partyId" />
+			</entity-find>
+		</actions>
+	</service>
+	<service verb="leavesToApprove" noun="EmploymentLeave">
+		<in-parameters>
+			<parameter name="pageIndex" type="Integer" />
+			<parameter name="pageSize" type="Integer" />
+			<parameter name="leaveApproved" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="totalEntries"></parameter>
+			<parameter name="employeeLeavesList"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="userAccount" from="ec.getUser().getUserAccount()" />
+			<entity-find entity-name="mantle.party.PartyRole" limit="1" list="partyRole">
+				<econdition field-name="partyId" from="userAccount.partyId" />
+			</entity-find>
+			<entity-find-one entity-name="moqui.security.UserGroupMember" value-field="userGroupMember">
+				<field-map field-name="userId" from="userAccount.userId" />
+			</entity-find-one>
+			<!-- if admins show all leaves -->
+			<set field="allowAll" value="false" />
+			<if condition="ec.getUser().isInGroup('ADMIN') || ec.getUser().isInGroup('FIELD_TRACKER_ADMIN')">
+				<set field="allowAll" value="true" />
+			</if>
+			<!-- find all party under the role type -->
+			<script>
+				userRoleTypeId = partyRole[0].roleTypeId;
+				roles = [userRoleTypeId];
+				public getRoles(roleTypeId,roles){
+					def childRoles = ec.entity.find("mantle.party.RoleType").condition('parentTypeId',roleTypeId).list();
+					childRoles.each{ it -> 
+						roles.add(it.roleTypeId);
+						if(it.parentTypeId){
+							getRoles(it.roleTypeId,roles);
+						}
+					}
+				}
+				getRoles(userRoleTypeId,roles);
+			</script>
+			<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+				<econdition field-name="partyId" from="userAccount.partyId" />
+				<select-field field-name="productStoreId" />
+			</entity-find>
+			<if condition="allowAll || productStoreRoles">
+				<if condition="!allowAll">
+					<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreParties">
+						<econdition field-name="productStoreId" from="productStoreRoles.productStoreId" />
+						<econdition field-name="roleTypeId" from="roles" ignore-if-empty="false" />
+						<select-field field-name="partyId" />
+					</entity-find>
+				</if>
+				<entity-find-count count-field="totalEntries" entity-name="com.ft.party.leaves.EmployeeLeavesByParty" cache="false">
+					<econdition field-name="toPartyId" from="productStoreParties?.partyId" ignore-if-empty="true" />
+					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
+					<econdition field-name="leaveApproved" />
+				</entity-find-count>
+				<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="pageIndex" cache="false">
+					<econdition field-name="toPartyId" from="productStoreParties?.partyId" ignore-if-empty="true" />
+					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
+					<econdition field-name="leaveApproved" />
+				</entity-find>
+				<log level="info" message="employeeLeavesList: ${employeeLeavesList}" />
+			</if>
+		</actions>
+	</service>
+	<service verb="update" noun="EmploymentLeave">
+		<in-parameters>
+			<parameter name="partyRelationshipId" required="true"></parameter>
+			<parameter name="fromDate" required="true"></parameter>
+			<parameter name="thruDate" required="true"></parameter>
+			<parameter name="leaveTypeEnumId" required="true"></parameter>
+			<parameter name="leaveReasonEnumId" required="true"></parameter>
+			<parameter name="leaveApproved"></parameter>
+			<parameter name="description" required="true"></parameter>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="employeeLeave"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="userAccount" from="ec.getUser().getUserAccount()" />
+			<entity-find-one entity-name="mantle.party.PartyRelationship" value-field="partyRelationship">
+				<field-map field-name="partyRelationshipId" />
+			</entity-find-one>
+			<if condition="partyRelationship.toPartyId.equals(userAccount.partyId) &amp;&amp; leaveApproved=='Y'">
+				<message error="true"> You cannot approved your own leave </message>
+			</if>
+			<service-call name="update#mantle.humanres.employment.EmploymentLeave" >
+				<field-map field-name="partyRelationshipId" from="partyRelationshipId" />
+				<field-map field-name="fromDate" from="fromDate" />
+				<field-map field-name="thruDate" from="thruDate" />
+				<field-map field-name="leaveTypeEnumId" from="leaveTypeEnumId" />
+				<field-map field-name="leaveReasonEnumId" from="leaveReasonEnumId" />
+				<field-map field-name="leaveApproved" from="leaveApproved" />
+				<field-map field-name="approverPartyId" from="userAccount.partyId" />
+				<field-map field-name="description" from="description" />
+			</service-call>
+			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="employeeLeave" cache="false">
+				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
+				<field-map field-name="fromDate" />
+			</entity-find-one>
+		</actions>
+	</service>
+	<service verb="get" noun="EmploymentLeave">
+		<in-parameters>
+			<parameter name="partyRelationshipId" required="true" />
+			<parameter name="fromDate" required="true" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="userLeave"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="userLeave">
+			</entity-find-one>
+		</actions>
+	</service>
+	<service verb="leaveTypes" noun="EmploymentLeave">
+		<out-parameters>
+			<parameter name="leaveTypeEnumId"></parameter>
+			<parameter name="leaveReasonEnumId"></parameter>
+		</out-parameters>
+		<actions>
+			<entity-find entity-name="moqui.basic.Enumeration" cache="true" list="leaveTypeEnumId">
+				<econdition field-name="enumTypeId" value="EmploymentLeaveType" />
+				<order-by field-name="description" />
+			</entity-find>
+			<entity-find entity-name="moqui.basic.Enumeration" cache="true" list="leaveReasonEnumId">
+				<econdition field-name="enumTypeId" value="EmploymentLeaveReason" />
+				<order-by field-name="description" />
+			</entity-find>
+
+		</actions>
+	</service>
+</services>

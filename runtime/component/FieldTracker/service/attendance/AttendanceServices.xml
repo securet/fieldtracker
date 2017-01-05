@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
-	<service verb="log" noun="TimeEntry" authenticate="false">
+	<service verb="log" noun="TimeEntry">
 		<in-parameters>
 			<parameter name="workEffortId"></parameter>
 			<parameter name="username"></parameter>
@@ -164,13 +164,16 @@
 			<log level="info" message="TimeEntry after Create/Update ${timeEntry}" />
 		</actions>
 	</service>
-	<service verb="getLog" noun="TimeEntry" authenticate="false">
+	<service verb="getLog" noun="TimeEntry">
 		<in-parameters>
 			<parameter name="username"></parameter>
+			<parameter name="estimatedStartDate" type="Timestamp" format="yyyy-mm-dd hh:mm:ss"></parameter>
+			<parameter name="estimatedCompletionDate" type="Timestamp" format="yyyy-mm-dd hh:mm:ss"></parameter>
 			<parameter name="pageIndex" type="Integer"/>
 			<parameter name="pageSize" type="Integer"/>
 		</in-parameters>
 		<out-parameters>
+			<parameter name="totalEntries"  type="Integer"></parameter>
 			<parameter name="userTimeLog"  type="list"></parameter>
 		</out-parameters>
 		<actions>
@@ -186,8 +189,15 @@
 					<set field="partyId" from="ec.user.userAccount.partyId" />
 				</else>
 			</if>
+			<entity-find-count count-field="totalEntries" entity-name="mantle.work.effort.WorkEffort">
+				<econdition field-name="ownerPartyId" from="partyId" />
+				<econdition field-name="estimatedStartDate" from="estimatedStartDate" operator="greater-equals" ignore-if-empty="true"/>
+				<econdition field-name="estimatedCompletionDate" from="estimatedCompletionDate" operator="less-equals" ignore-if-empty="true"/>
+			</entity-find-count>
 			<entity-find entity-name="mantle.work.effort.WorkEffort"  list="userWorkEffortList" limit="pageSize" offset="pageIndex">
 				<econdition field-name="ownerPartyId" from="partyId" />
+				<econdition field-name="estimatedStartDate" from="estimatedStartDate" operator="greater-equals" ignore-if-empty="true"/>
+				<econdition field-name="estimatedCompletionDate" from="estimatedCompletionDate" operator="less-equals" ignore-if-empty="true"/>
 				<select-field field-name="workEffortId"/>
 				<select-field field-name="estimatedStartDate"/>
 				<select-field field-name="estimatedCompletionDate"/>

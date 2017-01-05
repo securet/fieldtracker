@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" require-authentication="false" include-child-content="true" default-menu-include="false">
+	<widgets>
+		<form-single name="EditUser" transition="updateLeave" map="userLeave" extends="">
+			<field name="partyRelationshipId">
+				<default-field>
+					<hidden />
+				</default-field>
+			</field>
+			<field name="appliedBy">
+				<default-field>
+					<display text="${person?.firstName} ${person?.lastName}"></display>
+				</default-field>
+			</field>
+			<field name="thruDate">
+				<default-field>
+					<date-time format="yyyy-MM-dd" />
+				</default-field>
+			</field>
+			<field name="leaveTypeEnumId">
+				<default-field title="Leave Type">
+					<drop-down>
+						<entity-options key="${enumId}" text="${description}">
+							<entity-find entity-name="moqui.basic.Enumeration" cache="true">
+								<econdition field-name="enumTypeId" value="EmploymentLeaveType" />
+								<order-by field-name="description" />
+							</entity-find>
+						</entity-options>
+					</drop-down>
+				</default-field>
+			</field>
+			<field name="leaveReasonEnumId">
+				<default-field title="Leave Reason">
+					<drop-down>
+						<entity-options key="${enumId}" text="${description}">
+							<entity-find entity-name="moqui.basic.Enumeration" cache="true">
+								<econdition field-name="enumTypeId" value="EmploymentLeaveReason" />
+								<order-by field-name="description" />
+							</entity-find>
+						</entity-options>
+					</drop-down>
+				</default-field>
+			</field>
+			<field name="description">
+				<default-field>
+					<text-area />
+				</default-field>
+			</field>
+			<field name="leaveApproved">
+				<default-field>
+					<drop-down allow-empty="true">
+						<option key="Y" />
+						<option key="N" />
+					</drop-down>
+				</default-field>
+			</field>
+			<field name="approverPartyId">
+				<default-field>
+					<hidden default-value="${ec.getUser().getUserAccount().partyId}" />
+				</default-field>
+			</field>
+			<field name="submitButton">
+				<default-field title="${buttonName}">
+					<submit />
+				</default-field>
+			</field>
+		</form-single>
+	</widgets>
+</screen>

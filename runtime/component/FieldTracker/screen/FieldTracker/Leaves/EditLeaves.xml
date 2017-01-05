@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" default-menu-title="Edit" default-menu-index="1">
+
+	<parameter name="partyRelationshipId" required="true" />
+	<parameter name="fromDate" required="true"></parameter>
+
+	<transition name="updateLeave">
+		<service-call name="party.LeaveServices.update#EmploymentLeave" in-map="context" />
+		<default-response url="." />
+	</transition>
+
+	<actions>
+		<service-call name="party.LeaveServices.get#EmploymentLeave" in-map="true" out-map="context" />
+		<entity-find-one value-field="person" entity-name="mantle.party.Person">
+			<field-map field-name="partyId" from="userLeave?.toPartyId" />
+		</entity-find-one>
+		<entity-find-one value-field="approverPerson" entity-name="mantle.party.Person">
+			<field-map field-name="partyId" from="userLeave?.approverPartyId" />
+		</entity-find-one>
+		<set field="buttonName" value="Update"/>
+	</actions>
+	<widgets>
+		<container-panel id="UserInfoContainer" dynamic="true">
+			<!-- <panel-left size="300"> <label text="Payment Information" type="h2"/> <label text="Where payments are sent" type="p"/> <container-dialog id="PaymentInfoEdit" button-text="Edit Payment Info" width="800"> <form-single name="PaymentInfo" transition="storeContactInfo" map="paymentInfoFlat" extends="component://SimpleScreens/template/party/PartyForms.xml#ContactInfo"/> </container-dialog> <render-mode><text type="html" location="component://SimpleScreens/template/party/ContactInfo.html.gstring"/></render-mode> </panel-left> -->
+			<panel-center>
+				<form-single name="EditUser" transition="updateLeave" map="userLeave" extends="component://FieldTracker/screen/FieldTracker/Leaves/LeaveForm.xml#EditUser">
+					<field name="fromDate">
+						<default-field>
+							<display></display>
+						</default-field>
+					</field>
+					<field-layout >
+						<field-ref name="appliedBy"/>
+						<field-ref name="fromDate"/>
+						<field-ref name="thruDate"/>
+						<field-ref name="leaveTypeEnumId"/>
+						<field-ref name="leaveReasonEnumId"/>
+						<field-ref name="description"/>
+						<field-ref name="leaveApproved"/>
+						<field-ref name="approverPartyId"/>
+						<field-ref name="submitButton"/>
+					</field-layout>
+				</form-single>
+			</panel-center>
+		</container-panel>
+	</widgets>
+</screen>
