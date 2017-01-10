@@ -65,15 +65,15 @@
 	<service verb="getPartyRequests" noun="Request">
 		<in-parameters>
 			<parameter name="statusId" />
-			<parameter name="pageIndex" type="Integer"/>
-			<parameter name="pageSize" type="Integer"/>
+			<parameter name="pageIndex" type="Integer" />
+			<parameter name="pageSize" type="Integer" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"></parameter>
 			<parameter name="requestList"></parameter>
 		</out-parameters>
 		<actions>
-			<log level="info" message="found context as ${context.pageIndex}"/>
+			<log level="info" message="found context as ${context.pageIndex}" />
 			<entity-find-count count-field="totalEntries" entity-name="mantle.request.RequestAndParty">
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
@@ -169,8 +169,8 @@
 	<service verb="userRequests" noun="Request">
 		<in-parameters>
 			<parameter name="statusId" />
-			<parameter name="pageIndex" type="Integer"/>
-			<parameter name="pageSize" type="Integer"/>
+			<parameter name="pageIndex" type="Integer" />
+			<parameter name="pageSize" type="Integer" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"></parameter>
@@ -178,14 +178,74 @@
 		</out-parameters>
 		<actions>
 			<entity-find-count count-field="totalEntries" entity-name="mantle.request.RequestAndParty">
+				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 			</entity-find-count>
 			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="pageIndex">
+				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 				<order-by field-name="lastUpdatedStamp desc" />
 			</entity-find>
+		</actions>
+	</service>
+	<service verb="getPromoterApprovalList" noun="Request">
+		<in-parameters>
+			<parameter name="statusId" />
+			<parameter name="pageIndex" type="Integer" />
+			<parameter name="pageSize" type="Integer" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="requestList"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="userAccount" from="ec.getUser().getUserAccount()" />
+			<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+				<econdition field-name="partyId" from="userAccount.partyId" />
+				<econdition field-name="roleTypeId" operator="in" from="['AsstSalesManager','SeniorSalesManager']" />
+				<select-field field-name="productStoreId" />
+			</entity-find>
+			<entity-find-count count-field="totalEntries" entity-name="mantle.request.Request">
+				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
+				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
+				<econdition field-name="productStoreId" from="productStoreRoles?.productStoreId" ignore-if-empty="true" />
+			</entity-find-count>
+			<entity-find entity-name="mantle.request.Request" list="requestList" limit="pageSize" offset="pageIndex">
+				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
+				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
+				<econdition field-name="productStoreId" from="productStoreRoles?.productStoreId" ignore-if-empty="true" />
+				<order-by field-name="lastUpdatedStamp desc" />
+			</entity-find>
+		</actions>
+	</service>
+	<service verb="approve" noun="Request">
+		<in-parameters>
+			<parameter name="requestId"></parameter>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="request"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="context.username" value="${ec.user.username}" />
+			<service-call name="request.RequestServices.convertPromoterApprovalRequest#Request" in-map="context" out-map="context" />
+			<service-call name="request.RequestServices.getPartyRequest#Request" in-map="context" out-map-add-to-existing="false" out-map="requestEntity"></service-call>
+			<set field="request" from="requestEntity.request"/>
+		</actions>
+	</service>
+	<service verb="reject" noun="Request">
+		<in-parameters>
+			<parameter name="requestId"></parameter>
+		</in-parameters>
+		<out-parameters>
+			<parameter name="request"></parameter>
+		</out-parameters>
+		<actions>
+			<set field="context.username" value="${ec.user.username}" />
+			<set field="context.statusId" value="ReqRejected" />
+			<service-call name="request.RequestServices.updateRequest#Request" in-map="context" out-map="context" />
+			<service-call name="request.RequestServices.getPartyRequest#Request" in-map="context" out-map-add-to-existing="false" out-map="requestEntity"></service-call>
+			<set field="request" from="requestEntity.request"/>
 		</actions>
 	</service>
 </services>

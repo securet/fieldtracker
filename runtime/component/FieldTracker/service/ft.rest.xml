@@ -47,6 +47,21 @@
 					<service name="request.RequestServices.getPartyRequests#Request" />
 				</method>
 			</resource>
+			<resource name="approvalRequests">
+				<method type="get">
+					<service name="request.RequestServices.getPromoterApprovalList#Request"/>
+				</method>
+			</resource>
+			<resource name="approve">
+				<method type="put">
+					<service name="request.RequestServices.approve#Request"/>
+				</method>
+			</resource>
+			<resource name="reject">
+				<method type="put">
+					<service name="request.RequestServices.reject#Request"/>
+				</method>
+			</resource>
 		</resource>
 	</resource>
 	<resource name="attendance" description="ClockIn ClockOut services">
