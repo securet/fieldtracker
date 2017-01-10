@@ -81,7 +81,7 @@
 			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="pageIndex">
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
-				<order-by field-name="priority" />
+				<order-by field-name="lastUpdatedStamp DESC" />
 				<!-- <limit-view view-size="pageSize" view-index="pageIndex"/> -->
 			</entity-find>
 		</actions>
@@ -184,7 +184,7 @@
 			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="pageIndex">
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
-				<order-by field-name="priority" />
+				<order-by field-name="lastUpdatedStamp desc" />
 			</entity-find>
 		</actions>
 	</service>

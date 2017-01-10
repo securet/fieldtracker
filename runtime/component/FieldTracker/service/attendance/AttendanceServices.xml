@@ -201,6 +201,8 @@
 				<select-field field-name="workEffortId"/>
 				<select-field field-name="estimatedStartDate"/>
 				<select-field field-name="estimatedCompletionDate"/>
+				<order-by field-name="fromDate DESC" />
+				<order-by field-name="lastUpdatedStamp DESC" />
 			</entity-find>
 			<script>
 				userTimeLog = [];
@@ -229,8 +231,8 @@
 					<select-field field-name="clockOutLatitude"/>
 					<select-field field-name="clockOutLongitude"/>
 					<select-field field-name="lastUpdatedStamp"/>
-					<order-by field-name="fromDate" />
-					<order-by field-name="lastUpdatedStamp" />
+					<order-by field-name="fromDate DESC" />
+					<order-by field-name="lastUpdatedStamp DESC" />
 				</entity-find>
 				<script>
 					userWorkEffortMap.timeEntryList=timeEntryList;

@@ -70,17 +70,17 @@
 				</field>
 				<field name="latitude">
 					<default-field>
-						<text-line size="16" format="#0.00" />
+						<text-line size="16" format="#0.000000" />
 					</default-field>
 				</field>
 				<field name="longitude">
 					<default-field>
-						<text-line size="16" format="#0.00" />
+						<text-line size="16" format="#0.000000" />
 					</default-field>
 				</field>
 				<field name="proximityRadius">
 					<default-field title="Radius in Mts ">
-						<text-line size="16" format="#0.00" />
+						<text-line size="16" format="#0" />
 					</default-field>
 				</field>
 				<field name="submitButton">

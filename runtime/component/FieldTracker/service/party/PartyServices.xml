@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-2.0.xsd">
-    <service verb="create" noun="Account">
-        <description>
+	<service verb="create" noun="Account">
+		<description>
             Create a basic user account including:
             - Party/Person
             - UserAccount (with specified username or emailAddress for username)
@@ -9,95 +9,103 @@
 
             At the end this optionally logs in the user (for this to work it must be run locally).
         </description>
-        <in-parameters>
-            <auto-parameters entity-name="mantle.party.Person" include="nonpk"/>
-            <parameter name="firstName" required="true"/>
-            <parameter name="lastName" required="true"/>
+		<in-parameters>
+			<auto-parameters entity-name="mantle.party.Person" include="nonpk" />
+			<parameter name="firstName" required="true" />
+			<parameter name="lastName" required="true" />
 
-            <parameter name="disabled" default-value="N"/>
-            <parameter name="requirePasswordChange" default-value="N"/>
+			<parameter name="disabled" default-value="N" />
+			<parameter name="requirePasswordChange" default-value="N" />
 
-            <parameter name="emailAddress" required="true"><text-email/></parameter>
+			<parameter name="emailAddress" required="true">
+				<text-email />
+			</parameter>
 			<parameter name="contactNumber">
 				<text-digits></text-digits>
 			</parameter>
-			<parameter name="address1"/>
-			<parameter name="directions"/>
-			<parameter name="aadharIdPath"/>
-			<parameter name="userPhotoPath"/>
-			<parameter name="addressIdPath"/>
-            <parameter name="username" default-value="${emailAddress}"/>
-            <parameter name="newPassword"><description>If empty won't set a password, user will have to change or reset.</description></parameter>
-            <parameter name="newPasswordVerify"/>
+			<parameter name="address1" />
+			<parameter name="directions" />
+			<parameter name="aadharIdPath" />
+			<parameter name="userPhotoPath" />
+			<parameter name="addressIdPath" />
+			<parameter name="username" default-value="${emailAddress}" />
+			<parameter name="newPassword">
+				<description>If empty won't set a password, user will have to change or reset.</description>
+			</parameter>
+			<parameter name="newPasswordVerify" />
 
-            <parameter name="currencyUomId"/>
-            <parameter name="locale"/>
-            <parameter name="timeZone"/>
+			<parameter name="currencyUomId" />
+			<parameter name="locale" />
+			<parameter name="timeZone" />
 
-            <parameter name="userGroupId"/>
-            <parameter name="roleTypeId"/>
-            <parameter name="organizationId"/>
-            <parameter name="loginAfterCreate" type="Boolean" default="true"/>
-        </in-parameters>
-        <out-parameters>
-            <parameter name="userId"/>
-            <parameter name="partyId" required="true"/>
-            <parameter name="emailContactMechId"/>
-        </out-parameters>
-        <actions>
-            <!-- do this first to get a password validation ASAP -->
-            <if condition="username">
-                <!-- see if username already in use -->
-                <entity-find entity-name="moqui.security.UserAccount" list="existingUaList">
-                    <econdition field-name="username"/></entity-find>
-                <if condition="existingUaList"><return error="true" message="Username [${username}] is already in use. Choose another."/></if>
+			<parameter name="userGroupId" />
+			<parameter name="roleTypeId" />
+			<parameter name="organizationId" />
+			<parameter name="loginAfterCreate" type="Boolean" default="true" />
+		</in-parameters>
+		<out-parameters>
+			<parameter name="userId" />
+			<parameter name="partyId" required="true" />
+			<parameter name="emailContactMechId" />
+		</out-parameters>
+		<actions>
+			<!-- do this first to get a password validation ASAP -->
+			<if condition="username">
+				<!-- see if username already in use -->
+				<entity-find entity-name="moqui.security.UserAccount" list="existingUaList">
+					<econdition field-name="username" />
+				</entity-find>
+				<if condition="existingUaList">
+					<return error="true" message="Username [${username}] is already in use. Choose another." />
+				</if>
 
-                <set field="userFullName" value="${ec.resource.expand('PartyFullNameTemplate','')}"/>
-                <if condition="newPassword"><then>
-                    <service-call name="org.moqui.impl.UserServices.create#UserAccount" in-map="context" out-map="newUaOut"/>
-                </then><else>
-                    <service-call name="create#moqui.security.UserAccount" in-map="context" out-map="newUaOut"/>
-                </else></if>
-                <set field="userId" from="newUaOut.userId"/>
-            </if>
+				<set field="userFullName" value="${ec.resource.expand('PartyFullNameTemplate','')}" />
+				<if condition="newPassword">
+					<then>
+						<service-call name="org.moqui.impl.UserServices.create#UserAccount" in-map="context" out-map="newUaOut" />
+					</then>
+					<else>
+						<service-call name="create#moqui.security.UserAccount" in-map="context" out-map="newUaOut" />
+					</else>
+				</if>
+				<set field="userId" from="newUaOut.userId" />
+			</if>
 
-            <service-call name="create#mantle.party.Party" in-map="[partyTypeEnumId:'PtyPerson', disabled:disabled]" out-map="newPartyOut"/>
-            <set field="partyId" from="newPartyOut.partyId"/>
-            <service-call name="create#mantle.party.Person" in-map="context"/>
-            <if condition="roleTypeId">
-                <service-call name="create#mantle.party.PartyRole" in-map="[partyId:partyId, roleTypeId:roleTypeId]"/></if>
+			<service-call name="create#mantle.party.Party" in-map="[partyTypeEnumId:'PtyPerson', disabled:disabled]" out-map="newPartyOut" />
+			<set field="partyId" from="newPartyOut.partyId" />
+			<service-call name="create#mantle.party.Person" in-map="context" />
+			<if condition="roleTypeId">
+				<service-call name="create#mantle.party.PartyRole" in-map="[partyId:partyId, roleTypeId:roleTypeId]" />
+			</if>
 
-            <!-- add the emailAddress -->
-            <service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut"
-                    in-map="[emailAddress:emailAddress, partyId:partyId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
-                    telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary']"/>
-            <set field="emailContactMechId" from="emailOut.contactMechId"/>
-            <if condition="aadharIdPath">
+			<!-- add the emailAddress -->
+			<service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut" in-map="[emailAddress:emailAddress, partyId:partyId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
+                    telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary']" />
+			<set field="emailContactMechId" from="emailOut.contactMechId" />
+			<if condition="aadharIdPath">
 				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'aadharIdPath', docPath:aadharIdPath]" />
 			</if>
-            <if condition="userPhotoPath">
+			<if condition="userPhotoPath">
 				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'userPhotoPath', docPath:userPhotoPath]" />
 			</if>
-            <if condition="addressIdPath">
+			<if condition="addressIdPath">
 				<service-call name="create#mantle.party.PartyDocument" in-map="[partyId:context.partyId, docType:'addressIdPath', docPath:addressIdPath]" />
 			</if>
 
-            <if condition="username">
-                <!-- add the partyId to the UserAccount -->
-                <service-call name="update#moqui.security.UserAccount" in-map="[userId:newUaOut.userId, partyId:newPartyOut.partyId]"/>
-                <if condition="userGroupId">
-                    <service-call name="create#moqui.security.UserGroupMember"
-                            in-map="[userGroupId:userGroupId, userId:userId, fromDate:ec.user.nowTimestamp]"/>
-                </if>
-                <!-- login the user -->
-                <!-- <if condition="loginAfterCreate &amp;&amp; newPassword">
-                    <script>ec.user.loginUser(username, newPassword)</script></if> -->
-            </if>
-            <!-- also create employment and relationship -->
+			<if condition="username">
+				<!-- add the partyId to the UserAccount -->
+				<service-call name="update#moqui.security.UserAccount" in-map="[userId:newUaOut.userId, partyId:newPartyOut.partyId]" />
+				<if condition="userGroupId">
+					<service-call name="create#moqui.security.UserGroupMember" in-map="[userGroupId:userGroupId, userId:userId, fromDate:ec.user.nowTimestamp]" />
+				</if>
+				<!-- login the user -->
+				<!-- <if condition="loginAfterCreate &amp;&amp; newPassword"> <script>ec.user.loginUser(username, newPassword)</script></if> -->
+			</if>
+			<!-- also create employment and relationship -->
 			<service-call name="create#mantle.party.PartyRelationship" in-map="[relationshipTypeEnumId:'PrtMember', fromPartyId:organizationId, fromRoleTypeId:'OrgInternal',toPartyId:newPartyOut.partyId, toRoleTypeId:'Employee', fromDate:ec.user.nowTimestamp]" out-map="partyRelationship" />
 			<service-call name="create#mantle.humanres.employment.Employment" />
-        </actions>
-    </service>
+		</actions>
+	</service>
 	<service verb="updateAccountWithSingleRole" noun="Account">
 		<description>Update Person, UserAccount, and EmailPrimary.</description>
 		<in-parameters>
@@ -117,8 +125,8 @@
 				<text-digits></text-digits>
 			</parameter>
 			<parameter name="postalContactMechId" />
-			<parameter name="address1"/>
-			<parameter name="directions"/>
+			<parameter name="address1" />
+			<parameter name="directions" />
 			<parameter name="username" />
 
 			<parameter name="roleTypeId" />
@@ -138,16 +146,24 @@
 			</if>
 			<service-call name="update#mantle.party.Party" in-map="context" />
 			<service-call name="update#mantle.party.Person" in-map="context" />
-            <service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut"
-                    in-map="[emailAddress:emailAddress, partyId:partyId,emailContactMechId:emailContactMechId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
-                    telecomContactMechId:telecomContactMechId,telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary',postalContactMechId:postalContactMechId]"/>
+			<service-call name="mantle.party.ContactServices.store#PartyContactInfo" out-map="emailOut" in-map="[emailAddress:emailAddress, partyId:partyId,emailContactMechId:emailContactMechId, emailContactMechPurposeId:'EmailPrimary',contactNumber:contactNumber, 
+                    telecomContactMechId:telecomContactMechId,telecomContactMechPurposeId:'PhonePrimary',address1:address1,directions:directions,postalContactMechPurposeId:'PostalPrimary',postalContactMechId:postalContactMechId]" />
 			<if condition="roleTypeId">
-	            <entity-find-one entity-name="mantle.party.PartyRole" value-field="partyRole"/>
-	            <entity-delete-by-condition entity-name="mantle.party.PartyRole" >
-	            	<econdition field-name="partyId" from="partyId"/>
-	            </entity-delete-by-condition>
-	            <if condition="!partyRole">
+				<entity-find-one entity-name="mantle.party.PartyRole" value-field="partyRole" />
+				<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles">
+					<econdition field-name="partyId" from="partyId" />
+				</entity-find>			
+				<if condition="!partyRole">
 					<service-call name="create#mantle.party.PartyRole" in-map="[partyId:partyId, roleTypeId:roleTypeId]" />
+					<iterate entry="productStoreRole" list="productStoreRoles">
+						<entity-delete value-field="productStoreRole"/>
+						<set field="productStoreRole.roleTypeId" from="roleTypeId"/>
+						<entity-create value-field="productStoreRole"/>
+					</iterate>
+					<entity-delete-by-condition entity-name="mantle.party.PartyRole">
+						<econdition field-name="partyId" from="partyId" />
+						<econdition field-name="roleTypeId" operator="not-equals" from="roleTypeId" />
+					</entity-delete-by-condition>
 				</if>
 			</if>
 		</actions>
@@ -157,9 +173,46 @@
 			<parameter name="user"></parameter>
 		</out-parameters>
 		<actions>
-			<entity-find entity-name="PersonAndUserAccountWithRole" list="user">
-				<econdition field-name="username" from="ec.user.username"/>
+			<entity-find entity-name="PersonAndUserAccountWithRole" list="userList">
+				<econdition field-name="username" from="ec.user.username" />
 			</entity-find>
-		</actions>	
+			<set field="user" value="" type="List"/>
+			<iterate entry="userEntry" list="userList">
+				<script>
+					<![CDATA[
+						userObj = [:];
+						userObj.putAll(userEntry);
+						user.add(userObj);
+					]]>
+				</script>
+				<service-call name="mantle.party.ContactServices.get#PartyContactInfo" out-map="partyContactInfo" in-map="[partyId:userEntry.partyId, postalContactMechPurposeId:'PostalPrimary',
+                    telecomContactMechPurposeId:'PhonePrimary', emailContactMechPurposeId:'EmailPrimary']" />
+				<set field="partyContactInfoFlat" from="StupidUtilities.flattenNestedMap(partyContactInfo)" />
+				<log level="info" message="partyContactInfo: ${partyContactInfo}"/>
+				<set field="userObj.directions" from="partyContactInfo?.postalAddress?.directions" />
+				<set field="userObj.address1" from="partyContactInfo?.postalAddress?.address1" />
+				<set field="userObj.emailAddress" from="partyContactInfo?.emailAddress" />
+				<set field="userObj.contactNumber" from="partyContactInfo.telecomNumber?.contactNumber" />
+				<entity-find entity-name="mantle.party.PartyDocument" list="partyDocuments">
+					<econdition field-name="partyId" from="userEntry.partyId" />
+				</entity-find>
+				<iterate entry="partyDocument" list="partyDocuments">
+					<if condition="partyDocument.docType == 'userPhotoPath'">
+						<then>
+							<set field="userPhotoPath" from="partyDocument.docPath" />
+							<set field="userObj.userPhotoPath" from="partyDocument.docPath" />
+						</then>
+						<else-if condition="partyDocument.docType == 'aadharIdPath'">
+							<set field="aadharIdPath" from="partyDocument.docPath" />
+							<set field="userObj.aadharIdPath" from="partyDocument.docPath" />
+						</else-if>
+						<else-if condition="partyDocument.docType == 'addressIdPath'">
+							<set field="addressIdPath" from="partyDocument.docPath" />
+							<set field="userObj.addressIdPath" from="partyDocument.docPath" />
+						</else-if>
+					</if>
+				</iterate>
+			</iterate>
+		</actions>
 	</service>
 </services>

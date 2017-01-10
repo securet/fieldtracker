@@ -5,9 +5,9 @@
 		<in-parameters>
 			<parameter name="storeName" required="true" />
 			<parameter name="address" required="true" />
-			<parameter name="latitude" required="true" format="#0.00" />
-			<parameter name="longitude" required="true" format="#0.00" />
-			<parameter name="proximityRadius" required="true" format="#0.00" />
+			<parameter name="latitude" required="true" format="#0.000000" />
+			<parameter name="longitude" required="true" format="#0.000000" />
+			<parameter name="proximityRadius" required="true" format="#0" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="productStore"></parameter>
