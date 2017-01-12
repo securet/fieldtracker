@@ -34,7 +34,15 @@
 		</actions>
 		<default-response url="." />
 	</transition>
-
+	<transition name="listProductStoreRoleSubmit">
+		<actions>
+			<if condition="delete">
+				<service-call name="delete#mantle.product.store.ProductStoreRole" in-map="context" />
+				<message>Deleted Role ${roleTypeId} for user ${name}</message>
+			</if>
+		</actions>
+		<default-response url="." />
+	</transition>
 	<actions>
 		<entity-find-one entity-name="mantle.party.PersonAndUserAccount" value-field="personAndUserAccount" />
 		<!-- <service-call name="mantle.party.ContactServices.get#PrimaryEmailAddress" out-map="primaryEmail" in-map="[partyId:partyId]" /> -->
