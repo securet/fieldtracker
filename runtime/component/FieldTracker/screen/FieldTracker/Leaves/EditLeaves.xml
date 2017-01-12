@@ -5,7 +5,18 @@
 	<parameter name="fromDate" required="true"></parameter>
 
 	<transition name="updateLeave">
-		<service-call name="party.LeaveServices.update#EmploymentLeave" in-map="context" />
+		<actions>
+			<if condition="approve">
+				<then>
+					<log level="info" message="createUserInput x : ${context}" />
+					<set field="context.leaveApproved" value="Y" />
+				</then>
+				<else-if condition="reject">
+					<set field="context.leaveApproved" value="N" />
+				</else-if>
+			</if>
+			<service-call name="party.LeaveServices.update#EmploymentLeave" in-map="context" />
+		</actions>
 		<default-response url="." />
 	</transition>
 
@@ -17,31 +28,39 @@
 		<entity-find-one value-field="approverPerson" entity-name="mantle.party.Person">
 			<field-map field-name="partyId" from="userLeave?.approverPartyId" />
 		</entity-find-one>
-		<set field="buttonName" value="Update"/>
+		<set field="buttonName" value="Update" />
 	</actions>
 	<widgets>
-		<container-panel id="UserInfoContainer" dynamic="true">
-			<!-- <panel-left size="300"> <label text="Payment Information" type="h2"/> <label text="Where payments are sent" type="p"/> <container-dialog id="PaymentInfoEdit" button-text="Edit Payment Info" width="800"> <form-single name="PaymentInfo" transition="storeContactInfo" map="paymentInfoFlat" extends="component://SimpleScreens/template/party/PartyForms.xml#ContactInfo"/> </container-dialog> <render-mode><text type="html" location="component://SimpleScreens/template/party/ContactInfo.html.gstring"/></render-mode> </panel-left> -->
-			<panel-center>
+		<container-box>
+			<box-header>
+				<label text="Leave Request By ${person.firstName}" type="h5" />
+			</box-header>
+			<box-body>
 				<form-single name="EditUser" transition="updateLeave" map="userLeave" extends="component://FieldTracker/screen/FieldTracker/Leaves/LeaveForm.xml#EditUser">
 					<field name="fromDate">
 						<default-field>
 							<display></display>
 						</default-field>
 					</field>
-					<field-layout >
-						<field-ref name="appliedBy"/>
-						<field-ref name="fromDate"/>
-						<field-ref name="thruDate"/>
-						<field-ref name="leaveTypeEnumId"/>
-						<field-ref name="leaveReasonEnumId"/>
-						<field-ref name="description"/>
-						<field-ref name="leaveApproved"/>
-						<field-ref name="approverPartyId"/>
-						<field-ref name="submitButton"/>
+					<field-layout>
+						<field-group title="">
+							<field-ref name="appliedBy" />
+							<field-ref name="fromDate" />
+							<field-ref name="thruDate" />
+							<field-ref name="leaveTypeEnumId" />
+							<field-ref name="leaveReasonEnumId" />
+							<field-ref name="description" />
+							<field-ref name="leaveApproved" />
+							<field-ref name="approverPartyId" />
+						</field-group>
+						<field-row-big title="">
+							<field-ref name="submitButton" />
+							<field-ref name="approve" />
+							<field-ref name="reject" />
+						</field-row-big>
 					</field-layout>
 				</form-single>
-			</panel-center>
-		</container-panel>
+			</box-body>
+		</container-box>
 	</widgets>
 </screen>

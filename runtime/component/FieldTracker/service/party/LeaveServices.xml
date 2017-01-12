@@ -144,7 +144,7 @@
 				<field-map field-name="partyRelationshipId" />
 			</entity-find-one>
 			<if condition="partyRelationship.toPartyId.equals(userAccount.partyId) &amp;&amp; leaveApproved=='Y'">
-				<message error="true"> You cannot approved your own leave </message>
+				<message error="true"> You cannot approve your own leave </message>
 			</if>
 			<service-call name="update#mantle.humanres.employment.EmploymentLeave" >
 				<field-map field-name="partyRelationshipId" from="partyRelationshipId" />
@@ -157,7 +157,7 @@
 				<field-map field-name="description" from="description" />
 			</service-call>
 			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="employeeLeave" cache="false">
-				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
+				<field-map field-name="partyRelationshipId" from="partyRelationship.partyRelationshipId" />
 				<field-map field-name="fromDate" />
 			</entity-find-one>
 		</actions>

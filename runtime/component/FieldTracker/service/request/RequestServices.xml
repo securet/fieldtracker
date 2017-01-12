@@ -27,6 +27,7 @@
 			<set field="createUserInput.contactNumber" from="requestJsonParsed.requestInfo.phone" />
 			<set field="genPassword" from="StupidUtilities.getRandomString(3) + 'a1!'" />
 			<set field="createUserInput.newPassword" from="genPassword" />
+			<set field="createUserInput.organizationId" from="requestJsonParsed.requestInfo.organizationId" />
 			<set field="createUserInput.newPasswordVerify" from="genPassword" />
 			<service-call name="party.PartyServices.create#Account" in-map="createUserInput + [loginAfterCreate:'false']" out-map="context" />
 			<set field="emailContactMechId" from="context.contactMechId" />
@@ -115,6 +116,7 @@
 			<parameter name="roleTypeId" />
 			<parameter name="description" required="true" />
 			<parameter name="productStoreId" required="true" />
+			<parameter name="organizationId" required="true" />
 		</in-parameters>
 		<out-parameters>
 			<parameter name="request"></parameter>

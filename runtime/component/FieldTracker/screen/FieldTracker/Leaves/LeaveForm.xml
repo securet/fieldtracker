@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-2.0.xsd" require-authentication="false" include-child-content="true" default-menu-include="false">
 	<widgets>
-		<form-single name="EditUser" transition="updateLeave" map="userLeave" extends="">
+		<form-single name="EditUser" transition="updateLeave" map="userLeave" >
 			<field name="partyRelationshipId">
 				<default-field>
 					<hidden />
@@ -48,10 +48,11 @@
 			</field>
 			<field name="leaveApproved">
 				<default-field>
-					<drop-down allow-empty="true">
+					<display text="${leaveApproved?:'Not Yet'}"></display>
+					<!-- <drop-down allow-empty="true">
 						<option key="Y" />
 						<option key="N" />
-					</drop-down>
+					</drop-down> -->
 				</default-field>
 			</field>
 			<field name="approverPartyId">
@@ -59,8 +60,18 @@
 					<hidden default-value="${ec.getUser().getUserAccount().partyId}" />
 				</default-field>
 			</field>
-			<field name="submitButton">
+			<field name="submitButton" hide="!buttonName.equals('Apply')">
 				<default-field title="${buttonName}">
+					<submit />
+				</default-field>
+			</field>
+			<field name="approve" hide="!buttonName.equals('Update')">
+				<default-field title="Approve">
+					<submit />
+				</default-field>
+			</field>
+			<field name="reject" hide="!buttonName.equals('Update')">
+				<default-field title="Reject">
 					<submit />
 				</default-field>
 			</field>

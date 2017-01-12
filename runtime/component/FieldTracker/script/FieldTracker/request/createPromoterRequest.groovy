@@ -26,6 +26,7 @@ requestJson.requestInfo.aadharIdPath=aadharIdPath;
 requestJson.requestInfo.userPhoto=userPhoto;
 requestJson.requestInfo.addressIdPath=addressIdPath;
 requestJson.requestInfo.roleTypeId=roleTypeId;
+requestJson.requestInfo.organizationId=organizationId;
 JsonBuilder jb = new JsonBuilder();
 jb.call(requestJson);
 requestJsonStr = jb.toString();

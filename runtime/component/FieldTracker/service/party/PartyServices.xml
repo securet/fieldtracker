@@ -40,7 +40,7 @@
 
 			<parameter name="userGroupId" />
 			<parameter name="roleTypeId" />
-			<parameter name="organizationId" />
+			<parameter name="organizationId" required="true"/>
 			<parameter name="loginAfterCreate" type="Boolean" default="true" />
 		</in-parameters>
 		<out-parameters>
@@ -103,7 +103,7 @@
 			</if>
 			<!-- also create employment and relationship -->
 			<service-call name="create#mantle.party.PartyRelationship" in-map="[relationshipTypeEnumId:'PrtMember', fromPartyId:organizationId, fromRoleTypeId:'OrgInternal',toPartyId:newPartyOut.partyId, toRoleTypeId:'Employee', fromDate:ec.user.nowTimestamp]" out-map="partyRelationship" />
-			<service-call name="create#mantle.humanres.employment.Employment" />
+			<service-call name="create#mantle.humanres.employment.Employment" in-map="[partyRelationshipId:partyRelationship.partyRelationshipId]" />
 		</actions>
 	</service>
 	<service verb="updateAccountWithSingleRole" noun="Account">

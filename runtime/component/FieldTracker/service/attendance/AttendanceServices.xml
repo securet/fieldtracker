@@ -231,8 +231,8 @@
 					<select-field field-name="clockOutLatitude"/>
 					<select-field field-name="clockOutLongitude"/>
 					<select-field field-name="lastUpdatedStamp"/>
-					<order-by field-name="fromDate DESC" />
-					<order-by field-name="lastUpdatedStamp DESC" />
+					<order-by field-name="lastUpdatedStamp ASC" />
+					<order-by field-name="fromDate ASC" />
 				</entity-find>
 				<script>
 					userWorkEffortMap.timeEntryList=timeEntryList;
