@@ -12,11 +12,16 @@
 						<entity-find-one value-field="person" entity-name="Person"></entity-find-one>
 						<entity-find-one value-field="productStore" entity-name="ProductStore"></entity-find-one>
 					</row-actions>
-					<field name="productStoreId">
+					<field name="productStoreIdDisplay">
 						<default-field title="Product Store">
 							<link url="/apps/${appRoot}/Store/EditStore" url-type="plain" text="${productStore.storeName}">
 								<parameter name="productStoreId"/>
 							</link>
+						</default-field>
+					</field>
+					<field name="productStoreId">
+						<default-field title="Product Store">
+							<hidden/>
 						</default-field>
 					</field>
 					<field name="partyId">
