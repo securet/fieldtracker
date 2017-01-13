@@ -194,10 +194,10 @@
 				<set field="userObj.emailAddress" from="partyContactInfo?.emailAddress" />
 				<set field="userObj.contactNumber" from="partyContactInfo.telecomNumber?.contactNumber" />
 				<entity-find entity-name="mantle.product.store.ProductStoreRole" list="productStoreRoles" limit="1">
-					<econdition field-name="partyId" from="partyId" />
+					<econdition field-name="partyId" from="userEntry.partyId" />
 					<order-by field-name="lastUpdatedStamp DESC"/>
 				</entity-find>
-				<if condition="!productStoreRoles">
+				<if condition="productStoreRoles">
 					<set field="userObj.productStoreId" from="productStoreRoles[0].productStoreId"/>
 				</if>
 				<entity-find entity-name="mantle.party.PartyDocument" list="partyDocuments">
