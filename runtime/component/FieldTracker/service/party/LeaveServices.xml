@@ -34,8 +34,6 @@
 				<field-map field-name="leaveReasonEnumId" from="leaveReasonEnumId" />
 				<field-map field-name="description" from="description" />
 			</service-call>
-			<log level="info" message="partyRelationships[0].partyRelationshipId: ${partyRelationships[0].partyRelationshipId}"/>
-			<log level="info" message="fromDate ${fromDate}"/>
 			<entity-find-one entity-name="com.ft.party.leaves.EmployeeLeavesByParty" value-field="employeeLeave" cache="false">
 				<field-map field-name="partyRelationshipId" from="partyRelationships[0].partyRelationshipId" />
 				<field-map field-name="fromDate" />
@@ -44,8 +42,8 @@
 	</service>
 	<service verb="userLeaves" noun="EmploymentLeave">
 		<in-parameters>
-			<parameter name="pageIndex" type="Integer" />
-			<parameter name="pageSize" type="Integer" />
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer"  default-value="10"/>
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"></parameter>
@@ -56,7 +54,7 @@
 			<entity-find-count count-field="totalEntries" entity-name="com.ft.party.leaves.EmployeeLeavesByParty">
 				<econdition field-name="toPartyId" from="userAccount.partyId" />
 			</entity-find-count>
-			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<set field="fromOffset" value="${(pageIndex* pageSize)}" type="Integer"/>
 			<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="fromOffset">
 				<econdition field-name="toPartyId" from="userAccount.partyId" />
 			</entity-find>
@@ -64,8 +62,8 @@
 	</service>
 	<service verb="leavesToApprove" noun="EmploymentLeave">
 		<in-parameters>
-			<parameter name="pageIndex" type="Integer" />
-			<parameter name="pageSize" type="Integer" />
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer"  default-value="10"/>
 			<parameter name="leaveApproved" />
 		</in-parameters>
 		<out-parameters>
@@ -117,7 +115,7 @@
 					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
 					<econdition field-name="leaveApproved" />
 				</entity-find-count>
-				<set field="fromOffset" value="${pageIndex * pageSize}"/>
+				<set field="fromOffset" value="${(pageIndex* pageSize)}" type="Integer"/>
 				<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="fromOffset" cache="false">
 					<econdition field-name="toPartyId" from="productStoreParties?.partyId" ignore-if-empty="true" />
 					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
@@ -191,7 +189,6 @@
 				<econdition field-name="enumTypeId" value="EmploymentLeaveReason" />
 				<order-by field-name="description" />
 			</entity-find>
-
 		</actions>
 	</service>
 </services>

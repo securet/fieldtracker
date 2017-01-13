@@ -36,7 +36,7 @@
 			<parameter name="userStores" type="list"></parameter>
 		</out-parameters>
 		<actions>
-			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<set field="fromOffset" value="${(pageIndex* pageSize)}" type="Integer"/>
 			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores"  limit="pageSize" offset="fromOffset">
 				<econdition value="${ec.getUser().getUserAccount().username}" field-name="username" />
 			</entity-find>
