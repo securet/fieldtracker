@@ -28,12 +28,16 @@
 	</service>
 	<service verb="userStores" noun="Store">
 		<in-parameters>
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer" default-value="10"/>
 		</in-parameters>
 		<out-parameters>
+			<parameter name="totalEntries"></parameter>
 			<parameter name="userStores" type="list"></parameter>
 		</out-parameters>
 		<actions>
-			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores"  >
+			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<entity-find entity-name="ProductStoreRoleWithUser" list="userStores"  limit="pageSize" offset="fromOffset">
 				<econdition value="${ec.getUser().getUserAccount().username}" field-name="username" />
 			</entity-find>
 		</actions>

@@ -169,8 +169,8 @@
 			<parameter name="username"></parameter>
 			<parameter name="estimatedStartDate" type="Timestamp" format="yyyy-mm-dd hh:mm:ss"></parameter>
 			<parameter name="estimatedCompletionDate" type="Timestamp" format="yyyy-mm-dd hh:mm:ss"></parameter>
-			<parameter name="pageIndex" type="Integer"/>
-			<parameter name="pageSize" type="Integer"/>
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer" default-value="10"/>
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"  type="Integer"></parameter>
@@ -194,7 +194,9 @@
 				<econdition field-name="estimatedStartDate" from="estimatedStartDate" operator="greater-equals" ignore-if-empty="true"/>
 				<econdition field-name="estimatedCompletionDate" from="estimatedCompletionDate" operator="less-equals" ignore-if-empty="true"/>
 			</entity-find-count>
-			<entity-find entity-name="mantle.work.effort.WorkEffort"  list="userWorkEffortList" limit="pageSize" offset="pageIndex" >
+			<script></script>
+			<set field="fromOffset" value="${(pageIndex* pageSize)}" type="Integer"/>
+			<entity-find entity-name="mantle.work.effort.WorkEffort"  list="userWorkEffortList" limit="pageSize" offset="fromOffset" >
 				<econdition field-name="ownerPartyId" from="partyId" />
 				<econdition field-name="estimatedStartDate" from="estimatedStartDate" operator="greater-equals" ignore-if-empty="true"/>
 				<econdition field-name="estimatedCompletionDate" from="estimatedCompletionDate" operator="less-equals" ignore-if-empty="true"/>
@@ -231,8 +233,8 @@
 					<select-field field-name="clockOutLatitude"/>
 					<select-field field-name="clockOutLongitude"/>
 					<select-field field-name="lastUpdatedStamp"/>
-					<order-by field-name="lastUpdatedStamp ASC" />
 					<order-by field-name="fromDate ASC" />
+					<order-by field-name="thruDate ASC" />
 				</entity-find>
 				<script>
 					userWorkEffortMap.timeEntryList=timeEntryList;

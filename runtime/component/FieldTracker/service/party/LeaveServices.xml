@@ -56,7 +56,8 @@
 			<entity-find-count count-field="totalEntries" entity-name="com.ft.party.leaves.EmployeeLeavesByParty">
 				<econdition field-name="toPartyId" from="userAccount.partyId" />
 			</entity-find-count>
-			<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="pageIndex">
+			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="fromOffset">
 				<econdition field-name="toPartyId" from="userAccount.partyId" />
 			</entity-find>
 		</actions>
@@ -116,7 +117,8 @@
 					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
 					<econdition field-name="leaveApproved" />
 				</entity-find-count>
-				<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="pageIndex" cache="false">
+				<set field="fromOffset" value="${pageIndex * pageSize}"/>
+				<entity-find entity-name="com.ft.party.leaves.EmployeeLeavesByParty" list="employeeLeavesList" limit="pageSize" offset="fromOffset" cache="false">
 					<econdition field-name="toPartyId" from="productStoreParties?.partyId" ignore-if-empty="true" />
 					<econdition field-name="toPartyId" operator="not-equals" from="userAccount.partyId" />
 					<econdition field-name="leaveApproved" />

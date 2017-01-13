@@ -67,8 +67,8 @@
 	<service verb="getPartyRequests" noun="Request">
 		<in-parameters>
 			<parameter name="statusId" />
-			<parameter name="pageIndex" type="Integer" />
-			<parameter name="pageSize" type="Integer" />
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer" default-value="10"/>
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"></parameter>
@@ -80,7 +80,8 @@
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 			</entity-find-count>
-			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="pageIndex">
+			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="fromOffset">
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 				<order-by field-name="lastUpdatedStamp DESC" />
@@ -172,8 +173,8 @@
 	<service verb="userRequests" noun="Request">
 		<in-parameters>
 			<parameter name="statusId" />
-			<parameter name="pageIndex" type="Integer" />
-			<parameter name="pageSize" type="Integer" />
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer" default-value="10"/>
 		</in-parameters>
 		<out-parameters>
 			<parameter name="totalEntries"></parameter>
@@ -185,7 +186,8 @@
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 			</entity-find-count>
-			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="pageIndex">
+			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<entity-find entity-name="mantle.request.RequestAndParty" list="requestList" limit="pageSize" offset="fromOffset">
 				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
 				<econdition field-name="partyId" from="ec.user.userAccount.partyId" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
@@ -196,8 +198,8 @@
 	<service verb="getPromoterApprovalList" noun="Request">
 		<in-parameters>
 			<parameter name="statusId" />
-			<parameter name="pageIndex" type="Integer" />
-			<parameter name="pageSize" type="Integer" />
+			<parameter name="pageIndex" type="Integer" default-value="0"/>
+			<parameter name="pageSize" type="Integer" default-value="10"/>
 		</in-parameters>
 		<out-parameters>
 			<parameter name="requestList"></parameter>
@@ -214,7 +216,8 @@
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 				<econdition field-name="productStoreId" from="productStoreRoles?.productStoreId" ignore-if-empty="true" />
 			</entity-find-count>
-			<entity-find entity-name="mantle.request.Request" list="requestList" limit="pageSize" offset="pageIndex">
+			<set field="fromOffset" value="${pageIndex * pageSize}"/>
+			<entity-find entity-name="mantle.request.Request" list="requestList" limit="pageSize" offset="fromOffset">
 				<econdition field-name="requestTypeEnumId" value="RqtAddPromoter" />
 				<econdition field-name="statusId" from="statusId" ignore-if-empty="true" />
 				<econdition field-name="productStoreId" from="productStoreRoles?.productStoreId" ignore-if-empty="true" />

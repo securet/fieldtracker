@@ -8,6 +8,11 @@
 		<method type="get">
 			<service name="party.PartyServices.getUserInfo#Party" />
 		</method>
+		<resource name="changePassword">
+			<method type="put">
+				<service name="org.moqui.impl.UserServices.update#Password" />
+			</method>
+		</resource>
 	</resource>
 	<resource name="stores" description="Lookup for stores">
 		<method type="post">
@@ -49,17 +54,17 @@
 			</resource>
 			<resource name="approvalRequests">
 				<method type="get">
-					<service name="request.RequestServices.getPromoterApprovalList#Request"/>
+					<service name="request.RequestServices.getPromoterApprovalList#Request" />
 				</method>
 			</resource>
 			<resource name="approve">
 				<method type="put">
-					<service name="request.RequestServices.approve#Request"/>
+					<service name="request.RequestServices.approve#Request" />
 				</method>
 			</resource>
 			<resource name="reject">
 				<method type="put">
-					<service name="request.RequestServices.reject#Request"/>
+					<service name="request.RequestServices.reject#Request" />
 				</method>
 			</resource>
 		</resource>
@@ -83,7 +88,7 @@
 		</method>
 		<resource name="types">
 			<method type="get">
-				<service name="party.LeaveServices.leaveTypes#EmploymentLeave"/>
+				<service name="party.LeaveServices.leaveTypes#EmploymentLeave" />
 			</method>
 		</resource>
 		<resource name="my">
